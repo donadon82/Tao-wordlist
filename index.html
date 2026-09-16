@@ -40,8 +40,6 @@
         }
         h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
         label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
-        
-        /* Định dạng ô nhập liệu bằng dấu phẩy cho gọn và dễ dùng */
         input {
             width: 100%;
             padding: 12px;
@@ -75,6 +73,7 @@
             border-left: 4px solid var(--accent-color);
             display: none;
             font-size: 0.9rem;
+            word-break: break-all;
         }
         .ads-placeholder {
             background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
@@ -97,23 +96,22 @@
         <p>Bộ tổ hợp từ điển tối ưu hóa khử trùng chéo chuyên nghiệp</p>
     </header>
 
-    <!-- BANNER QUẢNG CÁO KIẾM TIỀN -->
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense - Banner 728x90]</div>
 
     <div class="card">
-        <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Lọc trùng chéo nâng cao)</h2>
+        <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Phân tách bằng khoảng trắng)</h2>
         
         <!-- Ô NHẬP 1: CHỮ -->
-        <label for="input-chu">📝 Nhập các CHỮ gốc (Cách nhau bằng dấu phẩy):</label>
-        <input type="text" id="input-chu" placeholder="Ví dụ: thuy, phong, admin">
+        <label for="input-chu">📝 Nhập các CHỮ gốc (Cách nhau bằng DẤU CÁCH):</label>
+        <input type="text" id="input-chu" placeholder="Ví dụ: Hang thuhang phong">
         
         <!-- Ô NHẬP 2: SỐ -->
-        <label for="input-so">🔢 Nhập các SỐ (Cách nhau bằng dấu phẩy):</label>
-        <input type="text" id="input-so" placeholder="Ví dụ: 1984, 123, 2026">
+        <label for="input-so">🔢 Nhập các SỐ (Cách nhau bằng DẤU CÁCH):</label>
+        <input type="text" id="input-so" placeholder="Ví dụ: 123 222 345">
         
         <!-- Ô NHẬP 3: KÝ TỰ -->
-        <label for="input-kytu">🔣 Nhập các KÝ TỰ đặc biệt (Cách nhau bằng dấu phẩy):</label>
-        <input type="text" id="input-kytu" placeholder="Ví dụ: @, $, @$&">
+        <label for="input-kytu">🔣 Nhập các KÝ TỰ đặc biệt (Cách nhau bằng DẤU CÁCH):</label>
+        <input type="text" id="input-kytu" placeholder="Ví dụ: @ $ ! %">
 
         <button onclick="generateAdvancedWordlist()">⚡ Bắt đầu tổ hợp & Tải file wordlist.txt</button>
         
@@ -124,75 +122,131 @@
 </div>
 
 <script>
-    // Hàm chuẩn hóa viết hoa chữ cái đầu của mỗi từ (PascalCase)
     function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('').replace(/\s+/g, '');
+        return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     }
 
-    // Hàm chuẩn hóa viết hoa chữ cái đầu tiên của toàn chuỗi (SentenceCase)
     function toSentenceCase(str) {
-        const cleanStr = str.replace(/\s+/g, '');
-        if (!cleanStr) return "";
-        return cleanStr.charAt(0).toUpperCase() + cleanStr.slice(1).toLowerCase();
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
-    // Hàm xử lý dữ liệu đầu vào phân tách bằng dấu phẩy
-    function processInput(elementId) {
-        return document.getElementById(elementId).value
-            .split(',')
-            .map(item => item.trim())
-            .filter(item => item.length > 0);
+    // HÀM CHUYÊN BIỆT: Chỉ phân tách bằng khoảng trắng, tự động xóa bỏ dấu phẩy nếu có
+    function processInputSpace(elementId) {
+        let val = document.getElementById(elementId).value;
+        // Thay thế tất cả dấu phẩy thành khoảng trắng, sau đó cắt theo khoảng trắng
+        val = val.replace(/,/g, ' ');
+        return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
     }
 
     function generateAdvancedWordlist() {
         const statusBox = document.getElementById('status-box');
         statusBox.style.display = "block";
-        statusBox.innerHTML = "⏳ Đang tính toán dữ liệu và khử trùng lặp chéo...";
+        statusBox.innerHTML = "⏳ Đang tính toán dữ liệu hoán vị cạn kiệt...";
         statusBox.style.borderLeftColor = "#38bdf8";
 
-        const chuGoc = processInput('input-chu');
-        const so = processInput('input-so');
-        const kytu = processInput('input-kytu');
+        const chuGoc = processInputSpace('input-chu');
+        const so = processInputSpace('input-so');
+        const kytu = processInputSpace('input-kytu');
 
-        if (chuGoc.length === 0 || so.length === 0 || kytu.length === 0) {
-            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập đầy đủ dữ liệu vào cả 3 ô (Chữ, Số, Ký tự)!";
+        if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
+            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu vào ít nhất một ô!";
             statusBox.style.borderLeftColor = "#f87171";
             return;
         }
 
-        // 1. Tạo các biến thể chữ sạch không trùng nhau (Thường, Hoa, Title, Sentence)
+        // 1. Chuẩn hóa các biến thể chữ (Thường, Hoa, Pascal, Sentence)
         const chuSach = new Set();
-        chuGoc.forEach(line => {
-            const cleanLine = line.replace(/\s+/g, '');
-            chuSach.add(cleanLine);
-            chuSach.add(cleanLine.toLowerCase());
-            chuSach.add(cleanLine.toUpperCase());
-            chuSach.add(toTitleCase(line));
-            chuSach.add(toSentenceCase(line));
+        chuGoc.forEach(word => {
+            chuSach.add(word);
+            chuSach.add(word.toLowerCase());
+            chuSach.add(word.toUpperCase());
+            chuSach.add(toTitleCase(word));
+            chuSach.add(toSentenceCase(word));
         });
         const currentChu = Array.from(chuSach);
 
-        // 2. Chạy thuật toán tổ hợp theo cấu trúc của bạn
+        // 2. Chạy full thuật toán logic tổ hợp
         const finalWordlistSet = new Set();
 
-        // TỔ HỢP 1: Chữ + Số 1 + Ký tự + Số 2 ($c$s1$k$s2)
-        for (let c of currentChu) {
-            for (let s1 of so) {
-                for (let k of kytu) {
-                    for (let s2 of so) {
-                        finalWordlistSet.add(`${c}${s1}${k}${s2}`);
+        if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
+            // Trọn bộ 6 hoán vị cốt lõi của Chữ + Số + Ký tự
+            for (let c of currentChu) {
+                for (let s_val of so) {
+                    for (let k of kytu) {
+                        finalWordlistSet.add(`${c}${s_val}${k}`);
+                        finalWordlistSet.add(`${c}${k}${s_val}`);
+                        finalWordlistSet.add(`${s_val}${c}${k}`);
+                        finalWordlistSet.add(`${s_val}${k}${c}`);
+                        finalWordlistSet.add(`${k}${c}${s_val}`);
+                        finalWordlistSet.add(`${k}${s_val}${c}`);
                     }
                 }
             }
         }
 
-        // TỔ HỢP 3: Số + Ký tự 1 + Chữ + Ký tự 2 ($s_val$k1$c$k2)
-        for (let s_val of so) {
+        // Thuần chữ, chữ + số, số + chữ, chữ + ký tự
+        if(currentChu.length > 0) {
+            for (let c of currentChu) {
+                finalWordlistSet.add(c);
+                for (let s_val of so) {
+                    finalWordlistSet.add(`${c}${s_val}`);
+                    finalWordlistSet.add(`${s_val}${c}`);
+                }
+                for (let k of kytu) {
+                    finalWordlistSet.add(`${c}${k}`);
+                    finalWordlistSet.add(`${k}${c}`);
+                }
+            }
+            // Nhân bản chữ
+            for (let c1 of currentChu) {
+                for (let c2 of currentChu) {
+                    finalWordlistSet.add(`${c1}${c2}`);
+                    for (let k of kytu) finalWordlistSet.add(`${c1}${c2}${k}`);
+                    for (let s_val of so) finalWordlistSet.add(`${c1}${s_val}${c2}`);
+                }
+            }
+        }
+
+        // Tổ hợp nâng cao dính líu đến ký tự
+        if(kytu.length > 0 && currentChu.length > 0) {
+            for (let k of kytu) {
+                for (let c1 of currentChu) {
+                    for (let c2 of currentChu) {
+                        for (let s_val of so) finalWordlistSet.add(`${k}${c1}${c2}${s_val}`);
+                    }
+                }
+            }
             for (let k1 of kytu) {
                 for (let c of currentChu) {
                     for (let k2 of kytu) {
-                        finalWordlistSet.add(`${s_val}${k1}${c}${k2}`);
+                        finalWordlistSet.add(`${k1}${c}${k2}`);
+                        for (let s_val of so) {
+                            finalWordlistSet.add(`${k1}${c}${s_val}${k2}`);
+                            finalWordlistSet.add(`${k1}${c}${k2}${s_val}`);
+                        }
                     }
+                }
+            }
+            for (let k of kytu) {
+                for (let c of currentChu) {
+                    for (let s_val of so) finalWordlistSet.add(`${k}${k}${c}${s_val}`);
+                }
+            }
+        }
+
+        // Tổ hợp riêng của Số và Ký tự
+        if(so.length > 0) {
+            for (let s_val of so) {
+                finalWordlistSet.add(s_val);
+                for (let k of kytu) {
+                    finalWordlistSet.add(`${k}${s_val}`);
+                    finalWordlistSet.add(`${s_val}${k}`);
+                }
+            }
+            for (let s1 of so) {
+                for (let k of kytu) {
+                    for (let s2 of so) finalWordlistSet.add(`${s1}${k}${s2}`);
                 }
             }
         }
@@ -201,19 +255,14 @@
 
         if (finalArray.length === 0) {
             statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra.";
+            statusBox.style.borderLeftColor = "#f87171";
             return;
         }
 
-        // 3. Xuất file .txt tải về máy
+        // 3. Xuất dữ liệu, mỗi từ khóa nằm trên một dòng riêng biệt sạch sẽ
         const blob = new Blob([finalArray.join('\n')], { type: 'text/plain;charset=utf-8' });
         const anchor = document.createElement('a');
         anchor.download = 'wordlist.txt';
         anchor.href = window.URL.createObjectURL(blob);
         anchor.click();
 
-        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã tạo ra <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất không trùng lặp. File <b>wordlist.txt</b> đang được tải về máy của bạn.`;
-        statusBox.style.borderLeftColor = "#4ade80";
-    }
-</script>
-</body>
-</html>
