@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto & Password Tools - Tạo Wordlist Miễn Phí</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --success-color: #4ade80;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 { color: var(--accent-color); margin-bottom: 5px; }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.2rem; }
+        label { display: block; margin: 12px 0 6px; font-weight: bold; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        .ads-placeholder {
+            background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🔐 Crypto & Password Toolkit</h1>
+        <p>Công cụ trực tuyến tối ưu hóa bảo mật và xử lý dữ liệu</p>
+    </header>
+
+    <!-- KHU VỰC TREO QUẢNG CÁO KIẾM TIỀN (TOP) -->
+    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense Banner 728x90]</div>
+
+    <!-- CÔNG CỤ 1: TẠO WORDLIST -->
+    <div class="card">
+        <h2>🛠️ Công cụ 1: Password Wordlist Generator (Tạo từ điển bẻ khóa/kiểm thử)</h2>
+        <label for="base-words">Nhập các từ khóa cốt lõi (Cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="base-words" placeholder="Ví dụ: thuy, phong, 1984, admin">
+        
+        <label for="suffixes">Nhập các ký tự đuôi muốn ghép (Cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="suffixes" placeholder="Ví dụ: @, $, 123, @$&">
+
+        <button onclick="generateWordlist()">Tạo file Wordlist (.txt)</button>
+    </div>
+
+    <!-- KHU VỰC TREO QUẢNG CÁO KIẾM TIỀN (MID) -->
+    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense]</div>
+
+    <!-- CÔNG CỤ 2: KIỂM TRA ĐỊNH DẠNG VÍ -->
+    <div class="card">
+        <h2>🔍 Công cụ 2: Crypto Address Format Validator (Kiểm tra ví)</h2>
+        <label for="wallet-address">Dán địa chỉ ví vào đây:</label>
+        <input type="text" id="wallet-address" placeholder="Dán ví BTC, ETH...">
+        <button onclick="validateAddress()">Kiểm tra định dạng</button>
+        <p id="valid-result" style="margin-top:15px; font-weight:bold;"></p>
+    </div>
+</div>
+
+<script>
+    // Logic tạo file từ điển thông minh
+    function generateWordlist() {
+        const words = document.getElementById('base-words').value.split(',').map(s => s.trim()).filter(s => s);
+        const suffixes = document.getElementById('suffixes').value.split(',').map(s => s.trim()).filter(s => s);
+        
+        if(words.length === 0) {
+            alert('Vui lòng nhập ít nhất một từ khóa cốt lõi!');
+            return;
+        }
+
+        let result = [];
+        // Thuật toán đảo vị trí và kết hợp từ khóa ngẫu nhiên
+        words.forEach(w => {
+            result.push(w); // Giữ nguyên từ gốc
+            suffixes.forEach(s => {
+                result.push(w + s); // Từ gốc + đuôi
+                result.push(s + w); // Đuôi + Từ gốc
+            });
+        });
+
+        // Tạo file và tự động tải xuống máy người dùng
+        const blob = new Blob([result.join('\n')], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        anchor.download = 'custom_wordlist.txt';
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.click();
+    }
+
+    // Logic kiểm tra định dạng ví nhanh
+    function validateAddress() {
+        const addr = document.getElementById('wallet-address').value.trim();
+        const resElement = document.getElementById('valid-result');
+        
+        if(!addr) {
+            resElement.innerText = "⚠️ Vui lòng nhập địa chỉ ví!";
+            resElement.style.color = "orange";
+            return;
+        }
+
+        // Định dạng Regex cơ bản để kiểm tra cấu trúc chuỗi ví
+        if (/^(0x)[0-9a-fA-F]{40}$/.test(addr)) {
+            resElement.innerText = "✅ Đây là định dạng hợp lệ của ví Ethereum (ETH) / BSC / Polygon.";
+            resElement.style.color = "#4ade80";
+        } else if (/^[13mjk][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(addr) || /^(bc1)[a-zA-Z0-9]{25,90}$/.test(addr)) {
+            resElement.innerText = "✅ Đây là định dạng hợp lệ của ví Bitcoin (BTC).";
+            resElement.style.color = "#4ade80";
+        } else {
+            resElement.innerText = "❌ Không nhận diện được hệ mạng. Vui lòng kiểm tra lại ký tự!";
+            resElement.style.color = "#f87171";
+        }
+    }
+</script>
+</body>
+</html>
