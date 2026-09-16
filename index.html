@@ -134,7 +134,6 @@
     // HÀM CHUYÊN BIỆT: Chỉ phân tách bằng khoảng trắng, tự động xóa bỏ dấu phẩy nếu có
     function processInputSpace(elementId) {
         let val = document.getElementById(elementId).value;
-        // Thay thế tất cả dấu phẩy thành khoảng trắng, sau đó cắt theo khoảng trắng
         val = val.replace(/,/g, ' ');
         return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
     }
@@ -155,7 +154,6 @@
             return;
         }
 
-        // 1. Chuẩn hóa các biến thể chữ (Thường, Hoa, Pascal, Sentence)
         const chuSach = new Set();
         chuGoc.forEach(word => {
             chuSach.add(word);
@@ -166,11 +164,9 @@
         });
         const currentChu = Array.from(chuSach);
 
-        // 2. Chạy full thuật toán logic tổ hợp
         const finalWordlistSet = new Set();
 
         if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
-            // Trọn bộ 6 hoán vị cốt lõi của Chữ + Số + Ký tự
             for (let c of currentChu) {
                 for (let s_val of so) {
                     for (let k of kytu) {
@@ -185,7 +181,6 @@
             }
         }
 
-        // Thuần chữ, chữ + số, số + chữ, chữ + ký tự
         if(currentChu.length > 0) {
             for (let c of currentChu) {
                 finalWordlistSet.add(c);
@@ -198,7 +193,6 @@
                     finalWordlistSet.add(`${k}${c}`);
                 }
             }
-            // Nhân bản chữ
             for (let c1 of currentChu) {
                 for (let c2 of currentChu) {
                     finalWordlistSet.add(`${c1}${c2}`);
@@ -208,7 +202,6 @@
             }
         }
 
-        // Tổ hợp nâng cao dính líu đến ký tự
         if(kytu.length > 0 && currentChu.length > 0) {
             for (let k of kytu) {
                 for (let c1 of currentChu) {
@@ -235,7 +228,6 @@
             }
         }
 
-        // Tổ hợp riêng của Số và Ký tự
         if(so.length > 0) {
             for (let s_val of so) {
                 finalWordlistSet.add(s_val);
@@ -259,10 +251,15 @@
             return;
         }
 
-        // 3. Xuất dữ liệu, mỗi từ khóa nằm trên một dòng riêng biệt sạch sẽ
         const blob = new Blob([finalArray.join('\n')], { type: 'text/plain;charset=utf-8' });
         const anchor = document.createElement('a');
         anchor.download = 'wordlist.txt';
         anchor.href = window.URL.createObjectURL(blob);
         anchor.click();
 
+        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã tổ hợp thành công <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất.<br>File <b>wordlist.txt</b> đang được tải tự động về thiết bị của bạn.`;
+        statusBox.style.borderLeftColor = "#4ade80";
+    }
+</script>
+</body>
+</html>
