@@ -40,7 +40,9 @@
         }
         h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
         label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
-        input, textarea {
+        
+        /* Định dạng ô nhập liệu bằng dấu phẩy cho gọn và dễ dùng */
+        input {
             width: 100%;
             padding: 12px;
             background-color: #0f172a;
@@ -49,8 +51,8 @@
             color: white;
             box-sizing: border-box;
             font-family: monospace;
+            font-size: 1rem;
         }
-        textarea { height: 80px; resize: vertical; }
         button {
             background-color: var(--accent-color);
             color: #0f172a;
@@ -92,23 +94,26 @@
 <div class="container">
     <header>
         <h1>🔐 Advanced Wordlist Generator</h1>
-        <p>Bộ tổ hợp từ điển tối ưu hóa khử trùng chéo dành cho Pentest & Recovery</p>
+        <p>Bộ tổ hợp từ điển tối ưu hóa khử trùng chéo chuyên nghiệp</p>
     </header>
 
     <!-- BANNER QUẢNG CÁO KIẾM TIỀN -->
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense - Banner 728x90]</div>
 
     <div class="card">
-        <h2>🛠️ Nhập dữ liệu đầu vào (Mỗi giá trị nằm trên một dòng)</h2>
+        <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Lọc trùng chéo nâng cao)</h2>
         
-        <label for="input-chu">📝 Danh sách CHỮ gốc (chu.txt):</label>
-        <textarea id="input-chu" placeholder="thuy&#10;phong&#10;admin"></textarea>
+        <!-- Ô NHẬP 1: CHỮ -->
+        <label for="input-chu">📝 Nhập các CHỮ gốc (Cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="input-chu" placeholder="Ví dụ: thuy, phong, admin">
         
-        <label for="input-so">🔢 Danh sách SỐ (so.txt):</label>
-        <textarea id="input-so" placeholder="1984&#10;123&#10;2026"></textarea>
+        <!-- Ô NHẬP 2: SỐ -->
+        <label for="input-so">🔢 Nhập các SỐ (Cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="input-so" placeholder="Ví dụ: 1984, 123, 2026">
         
-        <label for="input-kytu">🔣 Danh sách KÝ TỰ (kytu.txt):</label>
-        <textarea id="input-kytu" placeholder="@&#10;$&#10;@$&"></textarea>
+        <!-- Ô NHẬP 3: KÝ TỰ -->
+        <label for="input-kytu">🔣 Nhập các KÝ TỰ đặc biệt (Cách nhau bằng dấu phẩy):</label>
+        <input type="text" id="input-kytu" placeholder="Ví dụ: @, $, @$&">
 
         <button onclick="generateAdvancedWordlist()">⚡ Bắt đầu tổ hợp & Tải file wordlist.txt</button>
         
@@ -131,12 +136,12 @@
         return cleanStr.charAt(0).toUpperCase() + cleanStr.slice(1).toLowerCase();
     }
 
-    // Hàm xử lý dữ liệu thô đầu vào, bỏ dòng trống và khoảng trắng thừa
+    // Hàm xử lý dữ liệu đầu vào phân tách bằng dấu phẩy
     function processInput(elementId) {
         return document.getElementById(elementId).value
-            .split('\n')
-            .map(line => line.trim())
-            .filter(line => line.length > 0);
+            .split(',')
+            .map(item => item.trim())
+            .filter(item => item.length > 0);
     }
 
     function generateAdvancedWordlist() {
@@ -145,7 +150,6 @@
         statusBox.innerHTML = "⏳ Đang tính toán dữ liệu và khử trùng lặp chéo...";
         statusBox.style.borderLeftColor = "#38bdf8";
 
-        // Sử dụng Set để tự động lọc trùng dữ liệu ngay trên RAM của trình duyệt
         const chuGoc = processInput('input-chu');
         const so = processInput('input-so');
         const kytu = processInput('input-kytu');
@@ -156,7 +160,7 @@
             return;
         }
 
-        // 1. Tạo biến thể chữ sạch không trùng nhau
+        // 1. Tạo các biến thể chữ sạch không trùng nhau (Thường, Hoa, Title, Sentence)
         const chuSach = new Set();
         chuGoc.forEach(line => {
             const cleanLine = line.replace(/\s+/g, '');
@@ -168,7 +172,7 @@
         });
         const currentChu = Array.from(chuSach);
 
-        // 2. Tiến hành chạy 2 thuật toán tổ hợp
+        // 2. Chạy thuật toán tổ hợp theo cấu trúc của bạn
         const finalWordlistSet = new Set();
 
         // TỔ HỢP 1: Chữ + Số 1 + Ký tự + Số 2 ($c$s1$k$s2)
@@ -200,15 +204,14 @@
             return;
         }
 
-        // 3. Đóng gói dữ liệu thành file .txt và kích hoạt tự động tải xuống
+        // 3. Xuất file .txt tải về máy
         const blob = new Blob([finalArray.join('\n')], { type: 'text/plain;charset=utf-8' });
         const anchor = document.createElement('a');
         anchor.download = 'wordlist.txt';
         anchor.href = window.URL.createObjectURL(blob);
         anchor.click();
 
-        // Cập nhật trạng thái thành công
-        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã lọc trùng chéo và tạo ra <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất. File <b>wordlist.txt</b> đang được tải xuống máy của bạn.`;
+        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã tạo ra <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất không trùng lặp. File <b>wordlist.txt</b> đang được tải về máy của bạn.`;
         statusBox.style.borderLeftColor = "#4ade80";
     }
 </script>
