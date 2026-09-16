@@ -65,6 +65,7 @@
             transition: 0.2s;
         }
         button:hover { opacity: 0.9; background-color: var(--success-color); }
+        button:disabled { background-color: #475569; color: #94a3b8; cursor: not-allowed; }
         .status {
             margin-top: 15px;
             padding: 12px;
@@ -93,27 +94,24 @@
 <div class="container">
     <header>
         <h1>🔐 Advanced Wordlist Generator</h1>
-        <p>Bộ tổ hợp từ điển tối ưu hóa khử trùng chéo chuyên nghiệp</p>
+        <p>Bộ tổ hợp từ điển hiệu năng cao - Chống treo trình duyệt</p>
     </header>
 
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense - Banner 728x90]</div>
 
     <div class="card">
-        <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Phân tách bằng khoảng trắng)</h2>
+        <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Xử lý đa luồng chạy ngầm)</h2>
         
-        <!-- Ô NHẬP 1: CHỮ -->
         <label for="input-chu">📝 Nhập các CHỮ gốc (Cách nhau bằng DẤU CÁCH):</label>
         <input type="text" id="input-chu" placeholder="Ví dụ: Hang thuhang phong">
         
-        <!-- Ô NHẬP 2: SỐ -->
         <label for="input-so">🔢 Nhập các SỐ (Cách nhau bằng DẤU CÁCH):</label>
         <input type="text" id="input-so" placeholder="Ví dụ: 123 222 345">
         
-        <!-- Ô NHẬP 3: KÝ TỰ -->
         <label for="input-kytu">🔣 Nhập các KÝ TỰ đặc biệt (Cách nhau bằng DẤU CÁCH):</label>
         <input type="text" id="input-kytu" placeholder="Ví dụ: @ $ ! %">
 
-        <button onclick="generateAdvancedWordlist()">⚡ Bắt đầu tổ hợp & Tải file wordlist.txt</button>
+        <button id="btn-submit" onclick="startGeneration()">⚡ Bắt đầu tổ hợp & Tải file wordlist.txt</button>
         
         <div id="status-box" class="status"></div>
     </div>
@@ -122,144 +120,147 @@
 </div>
 
 <script>
-    function toTitleCase(str) {
-        return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-    }
+    // Khởi tạo một Web Worker nhúng trực tiếp bằng Blob để không cần file js phụ bên ngoài
+    const workerCode = `
+        function toTitleCase(str) {
+            return str.toLowerCase().replace(/(?:^|\\s)\\S/g, function(a) { return a.toUpperCase(); });
+        }
 
-    function toSentenceCase(str) {
-        if (!str) return "";
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    }
+        function toSentenceCase(str) {
+            if (!str) return "";
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
 
-    // HÀM CHUYÊN BIỆT: Chỉ phân tách bằng khoảng trắng, tự động xóa bỏ dấu phẩy nếu có
+        self.onmessage = function(e) {
+            const { chuGoc, so, kytu } = e.data;
+            const finalWordlistSet = new Set();
+
+            // 1. Chuẩn hóa biến thể chữ
+            const chuSach = new Set();
+            chuGoc.forEach(word => {
+                chuSach.add(word);
+                chuSach.add(word.toLowerCase());
+                chuSach.add(word.toUpperCase());
+                chuSach.add(toTitleCase(word));
+                chuSach.add(toSentenceCase(word));
+            });
+            const currentChu = Array.from(chuSach);
+
+            // 2. Chạy thuật toán tổ hợp cạn kiệt toàn tập
+            if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
+                for (let c of currentChu) {
+                    for (let s_val of so) {
+                        for (let k of kytu) {
+                            finalWordlistSet.add(c + s_val + k);
+                            finalWordlistSet.add(c + k + s_val);
+                            finalWordlistSet.add(s_val + c + k);
+                            finalWordlistSet.add(s_val + k + c);
+                            finalWordlistSet.add(k + c + s_val);
+                            finalWordlistSet.add(k + s_val + c);
+                        }
+                    }
+                }
+            }
+
+            if(currentChu.length > 0) {
+                for (let c of currentChu) {
+                    finalWordlistSet.add(c);
+                    for (let s_val of so) {
+                        finalWordlistSet.add(c + s_val);
+                        finalWordlistSet.add(s_val + c);
+                    }
+                    for (let k of kytu) {
+                        finalWordlistSet.add(c + k);
+                        finalWordlistSet.add(k + c);
+                    }
+                }
+                for (let c1 of currentChu) {
+                    for (let c2 of currentChu) {
+                        finalWordlistSet.add(c1 + c2);
+                        for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
+                        for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
+                    }
+                }
+            }
+
+            if(kytu.length > 0 && currentChu.length > 0) {
+                for (let k of kytu) {
+                    for (let c1 of currentChu) {
+                        for (let c2 of currentChu) {
+                            for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
+                        }
+                    }
+                }
+                for (let k1 of kytu) {
+                    for (let c of currentChu) {
+                        for (let k2 of kytu) {
+                            finalWordlistSet.add(k1 + c + k2);
+                            for (let s_val of so) {
+                                finalWordlistSet.add(k1 + c + s_val + k2);
+                                finalWordlistSet.add(k1 + c + k2 + s_val);
+                            }
+                        }
+                    }
+                }
+                for (let k of kytu) {
+                    for (let c of currentChu) {
+                        for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
+                    }
+                }
+            }
+
+            if(so.length > 0) {
+                for (let s_val of so) {
+                    finalWordlistSet.add(s_val);
+                    for (let k of kytu) {
+                        finalWordlistSet.add(k + s_val);
+                        finalWordlistSet.add(s_val + k);
+                    }
+                }
+                for (let s1 of so) {
+                    for (let k of kytu) {
+                        for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
+                    }
+                }
+            }
+
+            const finalArray = Array.from(finalWordlistSet);
+            self.postMessage({ result: finalArray });
+        };
+    `;
+
     function processInputSpace(elementId) {
         let val = document.getElementById(elementId).value;
         val = val.replace(/,/g, ' ');
         return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
     }
 
-    function generateAdvancedWordlist() {
+    function startGeneration() {
         const statusBox = document.getElementById('status-box');
+        const btn = document.getElementById('btn-submit');
+        
         statusBox.style.display = "block";
-        statusBox.innerHTML = "⏳ Đang tính toán dữ liệu hoán vị cạn kiệt...";
+        statusBox.innerHTML = "⏳ Đang xử lý tính toán ngầm (Trình duyệt của bạn sẽ không bị khóa)...";
         statusBox.style.borderLeftColor = "#38bdf8";
+        btn.disabled = true;
 
         const chuGoc = processInputSpace('input-chu');
         const so = processInputSpace('input-so');
         const kytu = processInputSpace('input-kytu');
 
         if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
-            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu vào ít nhất một ô!";
+            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu đầu vào!";
             statusBox.style.borderLeftColor = "#f87171";
+            btn.disabled = false;
             return;
         }
 
-        const chuSach = new Set();
-        chuGoc.forEach(word => {
-            chuSach.add(word);
-            chuSach.add(word.toLowerCase());
-            chuSach.add(word.toUpperCase());
-            chuSach.add(toTitleCase(word));
-            chuSach.add(toSentenceCase(word));
-        });
-        const currentChu = Array.from(chuSach);
+        // Tạo Worker từ Blob
+        const blobWorker = new Blob([workerCode], { type: 'application/javascript' });
+        const worker = new Worker(URL.createObjectURL(blobWorker));
 
-        const finalWordlistSet = new Set();
+        // Gửi dữ liệu sang luồng chạy ngầm
+        worker.postMessage({ chuGoc, so, kytu });
 
-        if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
-            for (let c of currentChu) {
-                for (let s_val of so) {
-                    for (let k of kytu) {
-                        finalWordlistSet.add(`${c}${s_val}${k}`);
-                        finalWordlistSet.add(`${c}${k}${s_val}`);
-                        finalWordlistSet.add(`${s_val}${c}${k}`);
-                        finalWordlistSet.add(`${s_val}${k}${c}`);
-                        finalWordlistSet.add(`${k}${c}${s_val}`);
-                        finalWordlistSet.add(`${k}${s_val}${c}`);
-                    }
-                }
-            }
-        }
-
-        if(currentChu.length > 0) {
-            for (let c of currentChu) {
-                finalWordlistSet.add(c);
-                for (let s_val of so) {
-                    finalWordlistSet.add(`${c}${s_val}`);
-                    finalWordlistSet.add(`${s_val}${c}`);
-                }
-                for (let k of kytu) {
-                    finalWordlistSet.add(`${c}${k}`);
-                    finalWordlistSet.add(`${k}${c}`);
-                }
-            }
-            for (let c1 of currentChu) {
-                for (let c2 of currentChu) {
-                    finalWordlistSet.add(`${c1}${c2}`);
-                    for (let k of kytu) finalWordlistSet.add(`${c1}${c2}${k}`);
-                    for (let s_val of so) finalWordlistSet.add(`${c1}${s_val}${c2}`);
-                }
-            }
-        }
-
-        if(kytu.length > 0 && currentChu.length > 0) {
-            for (let k of kytu) {
-                for (let c1 of currentChu) {
-                    for (let c2 of currentChu) {
-                        for (let s_val of so) finalWordlistSet.add(`${k}${c1}${c2}${s_val}`);
-                    }
-                }
-            }
-            for (let k1 of kytu) {
-                for (let c of currentChu) {
-                    for (let k2 of kytu) {
-                        finalWordlistSet.add(`${k1}${c}${k2}`);
-                        for (let s_val of so) {
-                            finalWordlistSet.add(`${k1}${c}${s_val}${k2}`);
-                            finalWordlistSet.add(`${k1}${c}${k2}${s_val}`);
-                        }
-                    }
-                }
-            }
-            for (let k of kytu) {
-                for (let c of currentChu) {
-                    for (let s_val of so) finalWordlistSet.add(`${k}${k}${c}${s_val}`);
-                }
-            }
-        }
-
-        if(so.length > 0) {
-            for (let s_val of so) {
-                finalWordlistSet.add(s_val);
-                for (let k of kytu) {
-                    finalWordlistSet.add(`${k}${s_val}`);
-                    finalWordlistSet.add(`${s_val}${k}`);
-                }
-            }
-            for (let s1 of so) {
-                for (let k of kytu) {
-                    for (let s2 of so) finalWordlistSet.add(`${s1}${k}${s2}`);
-                }
-            }
-        }
-
-        const finalArray = Array.from(finalWordlistSet);
-
-        if (finalArray.length === 0) {
-            statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra.";
-            statusBox.style.borderLeftColor = "#f87171";
-            return;
-        }
-
-        const blob = new Blob([finalArray.join('\n')], { type: 'text/plain;charset=utf-8' });
-        const anchor = document.createElement('a');
-        anchor.download = 'wordlist.txt';
-        anchor.href = window.URL.createObjectURL(blob);
-        anchor.click();
-
-        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã tổ hợp thành công <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất.<br>File <b>wordlist.txt</b> đang được tải tự động về thiết bị của bạn.`;
-        statusBox.style.borderLeftColor = "#4ade80";
-    }
-</script>
-</body>
-</html>
+        // Nhận kết quả trả về từ luồng ngầm khi hoàn thành
+        worker.onmessage = function(e) {
