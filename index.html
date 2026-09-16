@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto & Password Tools - Tạo Wordlist Miễn Phí</title>
+    <title>Crypto Password Wordlist Generator</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -28,40 +28,52 @@
         }
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
-        h1 { color: var(--accent-color); margin-bottom: 5px; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 24px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.2rem; }
-        label { display: block; margin: 12px 0 6px; font-weight: bold; }
+        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
+        label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
         input, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #0f172a;
             border: 1px solid #475569;
             border-radius: 6px;
             color: white;
             box-sizing: border-box;
+            font-family: monospace;
         }
+        textarea { height: 80px; resize: vertical; }
         button {
             background-color: var(--accent-color);
             color: #0f172a;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 20px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
             width: 100%;
+            font-size: 1rem;
             transition: 0.2s;
         }
-        button:hover { opacity: 0.9; }
+        button:hover { opacity: 0.9; background-color: var(--success-color); }
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background-color: #0f172a;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+            font-size: 0.9rem;
+        }
         .ads-placeholder {
             background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
             height: 90px;
@@ -71,7 +83,7 @@
             color: #94a3b8;
             border-radius: 8px;
             margin: 15px 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -79,89 +91,125 @@
 
 <div class="container">
     <header>
-        <h1>🔐 Crypto & Password Toolkit</h1>
-        <p>Công cụ trực tuyến tối ưu hóa bảo mật và xử lý dữ liệu</p>
+        <h1>🔐 Advanced Wordlist Generator</h1>
+        <p>Bộ tổ hợp từ điển tối ưu hóa khử trùng chéo dành cho Pentest & Recovery</p>
     </header>
 
-    <!-- KHU VỰC TREO QUẢNG CÁO KIẾM TIỀN (TOP) -->
-    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense Banner 728x90]</div>
+    <!-- BANNER QUẢNG CÁO KIẾM TIỀN -->
+    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense - Banner 728x90]</div>
 
-    <!-- CÔNG CỤ 1: TẠO WORDLIST -->
     <div class="card">
-        <h2>🛠️ Công cụ 1: Password Wordlist Generator (Tạo từ điển bẻ khóa/kiểm thử)</h2>
-        <label for="base-words">Nhập các từ khóa cốt lõi (Cách nhau bằng dấu phẩy):</label>
-        <input type="text" id="base-words" placeholder="Ví dụ: thuy, phong, 1984, admin">
+        <h2>🛠️ Nhập dữ liệu đầu vào (Mỗi giá trị nằm trên một dòng)</h2>
         
-        <label for="suffixes">Nhập các ký tự đuôi muốn ghép (Cách nhau bằng dấu phẩy):</label>
-        <input type="text" id="suffixes" placeholder="Ví dụ: @, $, 123, @$&">
+        <label for="input-chu">📝 Danh sách CHỮ gốc (chu.txt):</label>
+        <textarea id="input-chu" placeholder="thuy&#10;phong&#10;admin"></textarea>
+        
+        <label for="input-so">🔢 Danh sách SỐ (so.txt):</label>
+        <textarea id="input-so" placeholder="1984&#10;123&#10;2026"></textarea>
+        
+        <label for="input-kytu">🔣 Danh sách KÝ TỰ (kytu.txt):</label>
+        <textarea id="input-kytu" placeholder="@&#10;$&#10;@$&"></textarea>
 
-        <button onclick="generateWordlist()">Tạo file Wordlist (.txt)</button>
+        <button onclick="generateAdvancedWordlist()">⚡ Bắt đầu tổ hợp & Tải file wordlist.txt</button>
+        
+        <div id="status-box" class="status"></div>
     </div>
 
-    <!-- KHU VỰC TREO QUẢNG CÁO KIẾM TIỀN (MID) -->
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense]</div>
-
-    <!-- CÔNG CỤ 2: KIỂM TRA ĐỊNH DẠNG VÍ -->
-    <div class="card">
-        <h2>🔍 Công cụ 2: Crypto Address Format Validator (Kiểm tra ví)</h2>
-        <label for="wallet-address">Dán địa chỉ ví vào đây:</label>
-        <input type="text" id="wallet-address" placeholder="Dán ví BTC, ETH...">
-        <button onclick="validateAddress()">Kiểm tra định dạng</button>
-        <p id="valid-result" style="margin-top:15px; font-weight:bold;"></p>
-    </div>
 </div>
 
 <script>
-    // Logic tạo file từ điển thông minh
-    function generateWordlist() {
-        const words = document.getElementById('base-words').value.split(',').map(s => s.trim()).filter(s => s);
-        const suffixes = document.getElementById('suffixes').value.split(',').map(s => s.trim()).filter(s => s);
-        
-        if(words.length === 0) {
-            alert('Vui lòng nhập ít nhất một từ khóa cốt lõi!');
-            return;
-        }
-
-        let result = [];
-        // Thuật toán đảo vị trí và kết hợp từ khóa ngẫu nhiên
-        words.forEach(w => {
-            result.push(w); // Giữ nguyên từ gốc
-            suffixes.forEach(s => {
-                result.push(w + s); // Từ gốc + đuôi
-                result.push(s + w); // Đuôi + Từ gốc
-            });
-        });
-
-        // Tạo file và tự động tải xuống máy người dùng
-        const blob = new Blob([result.join('\n')], { type: 'text/plain' });
-        const anchor = document.createElement('a');
-        anchor.download = 'custom_wordlist.txt';
-        anchor.href = window.URL.createObjectURL(blob);
-        anchor.click();
+    // Hàm chuẩn hóa viết hoa chữ cái đầu của mỗi từ (PascalCase)
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('').replace(/\s+/g, '');
     }
 
-    // Logic kiểm tra định dạng ví nhanh
-    function validateAddress() {
-        const addr = document.getElementById('wallet-address').value.trim();
-        const resElement = document.getElementById('valid-result');
-        
-        if(!addr) {
-            resElement.innerText = "⚠️ Vui lòng nhập địa chỉ ví!";
-            resElement.style.color = "orange";
+    // Hàm chuẩn hóa viết hoa chữ cái đầu tiên của toàn chuỗi (SentenceCase)
+    function toSentenceCase(str) {
+        const cleanStr = str.replace(/\s+/g, '');
+        if (!cleanStr) return "";
+        return cleanStr.charAt(0).toUpperCase() + cleanStr.slice(1).toLowerCase();
+    }
+
+    // Hàm xử lý dữ liệu thô đầu vào, bỏ dòng trống và khoảng trắng thừa
+    function processInput(elementId) {
+        return document.getElementById(elementId).value
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+    }
+
+    function generateAdvancedWordlist() {
+        const statusBox = document.getElementById('status-box');
+        statusBox.style.display = "block";
+        statusBox.innerHTML = "⏳ Đang tính toán dữ liệu và khử trùng lặp chéo...";
+        statusBox.style.borderLeftColor = "#38bdf8";
+
+        // Sử dụng Set để tự động lọc trùng dữ liệu ngay trên RAM của trình duyệt
+        const chuGoc = processInput('input-chu');
+        const so = processInput('input-so');
+        const kytu = processInput('input-kytu');
+
+        if (chuGoc.length === 0 || so.length === 0 || kytu.length === 0) {
+            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập đầy đủ dữ liệu vào cả 3 ô (Chữ, Số, Ký tự)!";
+            statusBox.style.borderLeftColor = "#f87171";
             return;
         }
 
-        // Định dạng Regex cơ bản để kiểm tra cấu trúc chuỗi ví
-        if (/^(0x)[0-9a-fA-F]{40}$/.test(addr)) {
-            resElement.innerText = "✅ Đây là định dạng hợp lệ của ví Ethereum (ETH) / BSC / Polygon.";
-            resElement.style.color = "#4ade80";
-        } else if (/^[13mjk][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(addr) || /^(bc1)[a-zA-Z0-9]{25,90}$/.test(addr)) {
-            resElement.innerText = "✅ Đây là định dạng hợp lệ của ví Bitcoin (BTC).";
-            resElement.style.color = "#4ade80";
-        } else {
-            resElement.innerText = "❌ Không nhận diện được hệ mạng. Vui lòng kiểm tra lại ký tự!";
-            resElement.style.color = "#f87171";
+        // 1. Tạo biến thể chữ sạch không trùng nhau
+        const chuSach = new Set();
+        chuGoc.forEach(line => {
+            const cleanLine = line.replace(/\s+/g, '');
+            chuSach.add(cleanLine);
+            chuSach.add(cleanLine.toLowerCase());
+            chuSach.add(cleanLine.toUpperCase());
+            chuSach.add(toTitleCase(line));
+            chuSach.add(toSentenceCase(line));
+        });
+        const currentChu = Array.from(chuSach);
+
+        // 2. Tiến hành chạy 2 thuật toán tổ hợp
+        const finalWordlistSet = new Set();
+
+        // TỔ HỢP 1: Chữ + Số 1 + Ký tự + Số 2 ($c$s1$k$s2)
+        for (let c of currentChu) {
+            for (let s1 of so) {
+                for (let k of kytu) {
+                    for (let s2 of so) {
+                        finalWordlistSet.add(`${c}${s1}${k}${s2}`);
+                    }
+                }
+            }
         }
+
+        // TỔ HỢP 3: Số + Ký tự 1 + Chữ + Ký tự 2 ($s_val$k1$c$k2)
+        for (let s_val of so) {
+            for (let k1 of kytu) {
+                for (let c of currentChu) {
+                    for (let k2 of kytu) {
+                        finalWordlistSet.add(`${s_val}${k1}${c}${k2}`);
+                    }
+                }
+            }
+        }
+
+        const finalArray = Array.from(finalWordlistSet);
+
+        if (finalArray.length === 0) {
+            statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra.";
+            return;
+        }
+
+        // 3. Đóng gói dữ liệu thành file .txt và kích hoạt tự động tải xuống
+        const blob = new Blob([finalArray.join('\n')], { type: 'text/plain;charset=utf-8' });
+        const anchor = document.createElement('a');
+        anchor.download = 'wordlist.txt';
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.click();
+
+        // Cập nhật trạng thái thành công
+        statusBox.innerHTML = `✅ <b>Hoàn thành!</b> Đã lọc trùng chéo và tạo ra <b>${finalArray.toLocaleString()}</b> từ khóa độc nhất. File <b>wordlist.txt</b> đang được tải xuống máy của bạn.`;
+        statusBox.style.borderLeftColor = "#4ade80";
     }
 </script>
 </body>
