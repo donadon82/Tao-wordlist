@@ -79,6 +79,7 @@
             font-size: 1.1rem;
             transition: 0.2s;
             box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+            cursor: pointer;
         }
         .download-btn:hover { background-color: var(--success-color); transform: translateY(-2px); }
         .status {
@@ -121,7 +122,7 @@
         <textarea id="input-so" placeholder="Ví dụ: 0 1 2 3 4 5 6 7 8 9"></textarea>
         
         <label for="input-kytu">Ký tự</label>
-        <textarea id="input-kytu" placeholder="Ví dụ: ! @ # \$ %"></textarea>
+        <textarea id="input-kytu" placeholder="Ví dụ: ! @ # $ %"></textarea>
         
         <button onclick="startGeneration()">🚀 Tạo Wordlist</button>
         <div id="status-box" class="status"></div>
@@ -129,12 +130,15 @@
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense]</div>
     <div class="card" id="download-area" style="display: none;">
         <h2>📥 Kết quả</h2>
-        <p>Cấu trúc tổ hợp tệp tin đã sẵn sàng. Vui lòng xác minh bảo mật bên dưới để tải xuống.</p>
-        <a id="download-link" class="download-btn" href="https://direct-link.net" target="_blank">⬇️ Tải Wordlist (.txt)</a>
+        <p>Tệp tin wordlist.txt của bạn đã được tạo thành công trên hệ thống.</p>
+        <!-- Nút bấm thông minh kích hoạt đồng thời 2 hành động bằng sự kiện onclick -->
+        <a id="monetized-download-link" class="download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()">📥 Bấm vào đây để xác minh và tự động tải file về máy</a>
     </div>
 </div>
 
 <script>
+let globalBlobUrl = null;
+
 function toTitleCase(str) {
     return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
 }
@@ -268,9 +272,28 @@ function startGeneration() {
         return;
     }
 
-    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất!</b> Đã xử lý xong <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất.<br>Hệ thống đã đóng gói tệp tin thương mại thành công.`;
+    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất!</b> Đã xử lý xong <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất.`;
     statusBox.style.borderLeftColor = "#4ade80";
+
+    // Đóng gói sẵn file .txt trực tiếp vào RAM tạm thời
+    const blobFile = new Blob([Array.from(finalWordlistSet).join('\n')], { type: 'text/plain;charset=utf-8' });
+    if (globalBlobUrl) { URL.revokeObjectURL(globalBlobUrl); }
+    globalBlobUrl = URL.createObjectURL(blobFile);
+    
     downloadArea.style.display = "block";
+}
+
+// Hàm kích hoạt lệnh tải ngầm ngay khi người dùng click chuột
+function downloadFileImmediately() {
+    if (!globalBlobUrl) return;
+    
+    // Tạo một thẻ liên kết ẩn để ép trình duyệt tải file xuống bộ nhớ máy tính
+    const hiddenAnchor = document.createElement('a');
+    hiddenAnchor.href = globalBlobUrl;
+    hiddenAnchor.download = "wordlist.txt";
+    document.body.appendChild(hiddenAnchor);
+    hiddenAnchor.click();
+    document.body.removeChild(hiddenAnchor);
 }
 </script>
 </body>
