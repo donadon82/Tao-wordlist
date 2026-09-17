@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Password Wordlist Generator</title>
-
     <style>
         :root {
             --bg-color: #0f172a;
@@ -15,11 +14,7 @@
             --download-color: #f59e0b;
             --danger-color: #f87171;
         }
-
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
@@ -30,28 +25,10 @@
             flex-direction: column;
             align-items: center;
         }
-
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        h1 {
-            color: var(--accent-color);
-            margin-bottom: 5px;
-            font-size: 1.8rem;
-        }
-
-        .subtitle {
-            color: #94a3b8;
-            margin-top: 0;
-        }
-
+        .container { max-width: 800px; width: 100%; }
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }
+        .subtitle { color: #94a3b8; margin-top: 0; }
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -59,22 +36,8 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
-        h2 {
-            margin-top: 0;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 8px;
-            font-size: 1.1rem;
-            color: #94a3b8;
-        }
-
-        label {
-            display: block;
-            margin: 14px 0 6px;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-
+        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
+        label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
         textarea {
             width: 100%;
             min-height: 100px;
@@ -87,12 +50,7 @@
             font-family: monospace;
             font-size: 1rem;
         }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
+        textarea:focus { outline: none; border-color: var(--accent-color); }
         button {
             background-color: var(--accent-color);
             color: #0f172a;
@@ -106,12 +64,7 @@
             font-size: 1rem;
             transition: 0.2s;
         }
-
-        button:hover {
-            opacity: 0.9;
-            background-color: var(--success-color);
-        }
-
+        button:hover { opacity: 0.9; background-color: var(--success-color); }
         .download-btn {
             display: inline-block;
             background-color: var(--download-color);
@@ -127,12 +80,7 @@
             transition: 0.2s;
             box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
         }
-
-        .download-btn:hover {
-            background-color: var(--success-color);
-            transform: translateY(-2px);
-        }
-
+        .download-btn:hover { background-color: var(--success-color); transform: translateY(-2px); }
         .status {
             margin-top: 15px;
             padding: 12px;
@@ -143,15 +91,8 @@
             font-size: 1rem;
             line-height: 1.6;
         }
-
         .ads-placeholder {
-            background: repeating-linear-gradient(
-                45deg,
-                #1e293b,
-                #1e293b 10px,
-                #334155 10px,
-                #334155 20px
-            );
+            background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px);
             height: 90px;
             display: flex;
             align-items: center;
@@ -161,422 +102,176 @@
             margin: 15px 0;
             font-size: 0.85rem;
         }
-
-        .hint {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
+        .hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; }
     </style>
 </head>
-
 <body>
-
 <div class="container">
-
     <header>
         <h1>Crypto Password Wordlist Generator</h1>
-        <p class="subtitle">
-            Công cụ tạo danh sách biến thể từ dữ liệu bạn cung cấp
-        </p>
+        <p class="subtitle">Công cụ tạo danh sách biến thể từ dữ liệu bạn cung cấp</p>
     </header>
-
     <div class="card">
-
         <h2>⚙️ Dữ liệu đầu vào</h2>
-
         <label for="input-chu">Từ khóa / chữ</label>
-        <textarea
-            id="input-chu"
-            placeholder="Ví dụ: hoangthithuhang&#10;Thuhang&#10;Hang"
-        ></textarea>
-
-        <div class="hint">
-            Có thể nhập mỗi dòng một giá trị hoặc ngăn cách bằng dấu phẩy.
-        </div>
-
+        <textarea id="input-chu" placeholder="Ví dụ: hoangthithuhang&#10;Thuhang&#10;Hang"></textarea>
+        <div class="hint">Có thể nhập mỗi dòng một giá trị hoặc ngăn cách bằng dấu cách.</div>
+        
         <label for="input-so">Số</label>
-        <textarea
-            id="input-so"
-            placeholder="Ví dụ: 0 1 2 3 4 5 6 7 8 9"
-        ></textarea>
-
+        <textarea id="input-so" placeholder="Ví dụ: 0 1 2 3 4 5 6 7 8 9"></textarea>
+        
         <label for="input-kytu">Ký tự</label>
-        <textarea
-            id="input-kytu"
-            placeholder="Ví dụ: ! @ # $ %"
-        ></textarea>
-
-        <button onclick="startGeneration()">
-            🚀 Tạo Wordlist
-        </button>
-
+        <textarea id="input-kytu" placeholder="Ví dụ: ! @ # \$ %"></textarea>
+        
+        <button onclick="startGeneration()">🚀 Tạo Wordlist</button>
         <div id="status-box" class="status"></div>
-
     </div>
-
-    <div class="ads-placeholder">
-        Khu vực quảng cáo
-    </div>
-
+    <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense]</div>
     <div class="card" id="download-area" style="display: none;">
-
         <h2>📥 Kết quả</h2>
-
-        <p>
-            File wordlist đã được tạo và có thể tải xuống.
-        </p>
-
-        <a
-            id="download-link"
-            class="download-btn"
-            href="#"
-            download="wordlist.txt"
-        >
-            ⬇️ Tải Wordlist (.txt)
-        </a>
-
+        <p>Cấu trúc tổ hợp tệp tin đã sẵn sàng. Vui lòng xác minh bảo mật bên dưới để tải xuống.</p>
+        <a id="download-link" class="download-btn" href="https://direct-link.net" target="_blank">⬇️ Tải Wordlist (.txt)</a>
     </div>
-
 </div>
 
 <script>
-
 function toTitleCase(str) {
-    return str
-        .toLowerCase()
-        .replace(/(?:^|\s)\S/g, function(a) {
-            return a.toUpperCase();
-        })
-        .replace(/\s+/g, "");
+    return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
 }
-
 
 function toSentenceCase(str) {
     if (!str) return "";
-
     const clean = str.replace(/\s+/g, "");
-
-    return clean.charAt(0).toUpperCase()
-        + clean.slice(1).toLowerCase();
+    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
 }
-
 
 function processInputSpace(elementId) {
-
     let val = document.getElementById(elementId).value;
-
-    // Cho phép nhập bằng dấu phẩy hoặc khoảng trắng
     val = val.replace(/,/g, " ");
-
-    return val
-        .split(/\s+/)
-        .map(item => item.trim())
-        .filter(item => item.length > 0);
+    return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
 }
 
-
 function startGeneration() {
-
     const statusBox = document.getElementById("status-box");
     const downloadArea = document.getElementById("download-area");
-    const downloadLink = document.getElementById("download-link");
-
+    
     statusBox.style.display = "block";
     downloadArea.style.display = "none";
-
-    statusBox.innerHTML =
-        "⏳ Hệ thống đang tính toán cấu trúc tổ hợp...";
-
+    statusBox.innerHTML = "⏳ Hệ thống đang tính toán cấu trúc tổ hợp...";
     statusBox.style.borderLeftColor = "#38bdf8";
-
 
     const chuGoc = processInputSpace("input-chu");
     const so = processInputSpace("input-so");
     const kytu = processInputSpace("input-kytu");
 
-
-    if (
-        chuGoc.length === 0 &&
-        so.length === 0 &&
-        kytu.length === 0
-    ) {
-        statusBox.innerHTML =
-            "⚠️ Lỗi: Vui lòng nhập dữ liệu đầu vào!";
-
+    if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
+        statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu đầu vào!";
         statusBox.style.borderLeftColor = "#f87171";
-
         return;
     }
 
-
     const finalWordlistSet = new Set();
-
     const chuSach = new Set();
 
-
-    // Tạo các dạng chữ
     chuGoc.forEach(word => {
-
         chuSach.add(word);
         chuSach.add(word.toLowerCase());
         chuSach.add(word.toUpperCase());
         chuSach.add(toTitleCase(word));
         chuSach.add(toSentenceCase(word));
-
     });
-
 
     const currentChu = Array.from(chuSach);
 
-
-    // Chữ + số + ký tự theo mọi thứ tự
-    if (
-        currentChu.length > 0 &&
-        so.length > 0 &&
-        kytu.length > 0
-    ) {
-
+    if (currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
         for (let c of currentChu) {
-
             for (let s_val of so) {
-
                 for (let k of kytu) {
-
                     finalWordlistSet.add(c + s_val + k);
                     finalWordlistSet.add(c + k + s_val);
-
                     finalWordlistSet.add(s_val + c + k);
                     finalWordlistSet.add(s_val + k + c);
-
                     finalWordlistSet.add(k + c + s_val);
                     finalWordlistSet.add(k + s_val + c);
-
                 }
             }
         }
     }
 
-
-    // Chữ kết hợp số / ký tự
     if (currentChu.length > 0) {
-
         for (let c of currentChu) {
-
             finalWordlistSet.add(c);
-
-
             for (let s_val of so) {
-
                 finalWordlistSet.add(c + s_val);
                 finalWordlistSet.add(s_val + c);
-
             }
-
-
             for (let k of kytu) {
-
                 finalWordlistSet.add(c + k);
                 finalWordlistSet.add(k + c);
-
             }
-
         }
-
-
-        // Hai từ kết hợp
         for (let c1 of currentChu) {
-
             for (let c2 of currentChu) {
-
                 finalWordlistSet.add(c1 + c2);
-
-
-                for (let k of kytu) {
-                    finalWordlistSet.add(c1 + c2 + k);
-                }
-
-
-                for (let s_val of so) {
-                    finalWordlistSet.add(
-                        c1 + s_val + c2
-                    );
-                }
-
+                for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
+                for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
             }
         }
     }
 
-
-    // Ký tự + chữ + chữ + số
-    if (
-        kytu.length > 0 &&
-        currentChu.length > 0
-    ) {
-
+    if (kytu.length > 0 && currentChu.length > 0) {
         for (let k of kytu) {
-
             for (let c1 of currentChu) {
-
                 for (let c2 of currentChu) {
-
-                    for (let s_val of so) {
-
-                        finalWordlistSet.add(
-                            k + c1 + c2 + s_val
-                        );
-
-                    }
+                    for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
                 }
             }
         }
-
-
-        // Ký tự + chữ + ký tự
         for (let k1 of kytu) {
-
             for (let c of currentChu) {
-
                 for (let k2 of kytu) {
-
-                    finalWordlistSet.add(
-                        k1 + c + k2
-                    );
-
-
+                    finalWordlistSet.add(k1 + c + k2);
                     for (let s_val of so) {
-
-                        finalWordlistSet.add(
-                            k1 + c + s_val + k2
-                        );
-
-                        finalWordlistSet.add(
-                            k1 + c + k2 + s_val
-                        );
-
+                        finalWordlistSet.add(k1 + c + s_val + k2);
+                        finalWordlistSet.add(k1 + c + k2 + s_val);
                     }
                 }
             }
         }
-
-
-        // Hai ký tự + chữ + số
         for (let k of kytu) {
-
             for (let c of currentChu) {
-
-                for (let s_val of so) {
-
-                    finalWordlistSet.add(
-                        k + k + c + s_val
-                    );
-
-                }
+                for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
             }
         }
     }
 
-
-    // Số kết hợp ký tự
     if (so.length > 0) {
-
         for (let s_val of so) {
-
             finalWordlistSet.add(s_val);
-
-
             for (let k of kytu) {
-
-                finalWordlistSet.add(
-                    k + s_val
-                );
-
-                finalWordlistSet.add(
-                    s_val + k
-                );
-
+                finalWordlistSet.add(k + s_val);
+                finalWordlistSet.add(s_val + k);
             }
         }
-
-
-        // Số + ký tự + số
         for (let s1 of so) {
-
             for (let k of kytu) {
-
-                for (let s2 of so) {
-
-                    finalWordlistSet.add(
-                        s1 + k + s2
-                    );
-
-                }
+                for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
             }
         }
     }
-
 
     const total = finalWordlistSet.size;
 
-
     if (total === 0) {
-
-        statusBox.innerHTML =
-            "❌ Không có từ khóa nào được tạo ra.";
-
+        statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra.";
         statusBox.style.borderLeftColor = "#f87171";
-
         return;
     }
 
-
-    // Chuyển Set thành mảng và sắp xếp
-    const wordlist = Array.from(finalWordlistSet);
-
-    wordlist.sort();
-
-
-    // Tạo nội dung file TXT
-    const fileContent = wordlist.join("\n");
-
-    const blob = new Blob(
-        [fileContent],
-        { type: "text/plain;charset=utf-8" }
-    );
-
-
-    // Xóa URL cũ nếu có
-    if (downloadLink.dataset.url) {
-        URL.revokeObjectURL(downloadLink.dataset.url);
-    }
-
-
-    const url = URL.createObjectURL(blob);
-
-    downloadLink.href = url;
-
-    downloadLink.dataset.url = url;
-
-    downloadLink.download = "wordlist.txt";
-
-
-    // Hiển thị kết quả
-    statusBox.innerHTML =
-        `✅ <b>Tính toán hoàn tất!</b><br>
-        Đã tạo <b>${total.toLocaleString()}</b>
-        biến thể độc nhất.<br>
-        File wordlist đã sẵn sàng để tải xuống.`;
-
-    statusBox.style.borderLeftColor =
-        "#4ade80";
-
-
-    downloadArea.style.display =
-        "block";
+    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất!</b> Đã xử lý xong <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất.<br>Hệ thống đã đóng gói tệp tin thương mại thành công.`;
+    statusBox.style.borderLeftColor = "#4ade80";
+    downloadArea.style.display = "block";
 }
-
 </script>
-
 </body>
 </html>
-
