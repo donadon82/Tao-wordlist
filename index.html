@@ -187,7 +187,7 @@
                 <span>🚀 Generate Combinations</span>
                 <small>Process Wordlist</small>
             </button>
-            <!-- Đường link kiếm tiền chính xác của bạn được gắn tại đây -->
+            <!-- Cấu hình link quảng cáo chuẩn xác -->
             <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
                 <span>📥 Unlock & Download File</span>
                 <small>Free Download (Support Developer)</small>
@@ -226,7 +226,6 @@ function toSentenceCase(str) {
 
 function processInputSpace(elementId) {
     let val = document.getElementById(elementId).value;
-    // Đồng bộ hóa việc lưu trữ cục bộ ngay khi xử lý dữ liệu
     localStorage.setItem("intl_" + elementId.replace("input-", ""), val);
     val = val.replace(/,/g, " ");
     return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
@@ -268,3 +267,66 @@ function startGeneration() {
         chuMoRong.push(item.toUpperCase());
         chuMoRong.push(toSentenceCase(item));
     });
+    chuMoRong = [...new Set(chuMoRong)];
+
+    let wordlistSet = new Set();
+
+    // 1. Chỉ có biến thể chữ
+chuMoRong.forEach(c => wordlistSet.add(c));
+    
+    // 2. Tổ hợp Chữ + Số
+    chuMoRong.forEach(c => {
+        so.forEach(s => {
+            wordlistSet.add(c + s);
+            wordlistSet.add(s + c);
+        });
+    });
+
+    // 3. Tổ hợp Chữ + Ký tự
+    chuMoRong.forEach(c => {
+        kytu.forEach(k => {
+            wordlistSet.add(c + k);
+            wordlistSet.add(k + c);
+        });
+    });
+
+    // 4. Tổ hợp đầy đủ Chữ + Số + Ký tự
+    chuMoRong.forEach(c => {
+        so.forEach(s => {
+            kytu.forEach(k => {
+                wordlistSet.add(c + s + k);
+                wordlistSet.add(c + k + s);
+                wordlistSet.add(s + c + k);
+                wordlistSet.add(s + k + c);
+                wordlistSet.add(k + c + s);
+                wordlistSet.add(k + s + c);
+            });
+        });
+    });
+
+    // Nếu không nhập chữ, sinh cấu trúc Số + Ký tự đặc biệt
+    if(chuMoRong.length === 0) {
+        so.forEach(s => {
+            wordlistSet.add(s);
+            kytu.forEach(k => {
+                wordlistSet.add(s + k);
+                wordlistSet.add(k + s);
+            });
+        });
+    }
+
+    const finalResult = Array.from(wordlistSet).join("\n");
+    const totalLines = wordlistSet.size;
+
+    if (globalBlobUrl) {
+        URL.revokeObjectURL(globalBlobUrl);
+    }
+
+    const blob = new Blob([finalResult], { type: "text/plain;charset=utf-8" });
+    globalBlobUrl = URL.createObjectURL(blob);
+
+    downloadLink.style.display = "flex";
+    statusBox.innerHTML = `✅ <b>Generation Complete!</b><br>Total distinct password variations generated: <b>${totalLines.toLocaleString()}</b> lines.<br>Click the yellow button to unlock and save your file.`;
+    statusBox.style.borderLeftColor = "var(--success-color)";
+}
+</script>
