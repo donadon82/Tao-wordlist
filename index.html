@@ -51,7 +51,17 @@
             font-size: 1rem;
         }
         textarea:focus { outline: none; border-color: var(--accent-color); }
-        button {
+        
+        /* Cấu trúc hàng ngang để chứa 2 nút bấm nằm cạnh nhau */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            align-items: stretch;
+        }
+        
+        /* Nút Tạo Wordlist */
+        .submit-btn {
             background-color: var(--accent-color);
             color: #0f172a;
             border: none;
@@ -59,29 +69,36 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 20px;
-            width: 100%;
             font-size: 1rem;
             transition: 0.2s;
+            flex: 1; /* Tự động chia đều không gian ngang */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        button:hover { opacity: 0.9; background-color: var(--success-color); }
+        .submit-btn:hover { opacity: 0.9; background-color: var(--success-color); }
+        
+        /* Nút Tải Kiếm Tiền Linkvertise nằm cạnh nút tạo */
         .download-btn {
-            display: inline-block;
             background-color: var(--download-color);
             color: #0f172a;
             text-decoration: none;
-            padding: 15px 25px;
+            padding: 14px 20px;
             font-weight: bold;
             border-radius: 6px;
-            margin-top: 15px;
-            text-align: center;
-            width: 100%;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: 0.2s;
             box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
             cursor: pointer;
+            flex: 1; /* Tự động chia đều không gian ngang */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.4;
         }
         .download-btn:hover { background-color: var(--success-color); transform: translateY(-2px); }
+        
         .status {
             margin-top: 15px;
             padding: 12px;
@@ -104,6 +121,11 @@
             font-size: 0.85rem;
         }
         .hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; }
+
+        /* Hỗ trợ hiển thị trên điện thoại màn hình nhỏ nếu hàng ngang bị chật */
+        @media (max-width: 500px) {
+            .button-group { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -124,16 +146,15 @@
         <label for="input-kytu">Ký tự</label>
         <textarea id="input-kytu" placeholder="Ví dụ: ! @ # $ %"></textarea>
         
-        <button onclick="startGeneration()">🚀 Tạo Wordlist</button>
+        <!-- NHÓM NÚT NẰM CẠNH NHAU TRÊN CÙNG MỘT HÀNG -->
+        <div class="button-group">
+            <button class="submit-btn" onclick="startGeneration()">🚀 Tạo Wordlist</button>
+            <a id="monetized-download-link" class="download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">📥 Tải file & Xác minh</a>
+        </div>
+        
         <div id="status-box" class="status"></div>
     </div>
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense]</div>
-    <div class="card" id="download-area" style="display: none;">
-        <h2>📥 Kết quả</h2>
-        <p>Tệp tin wordlist.txt của bạn đã được tạo thành công trên hệ thống.</p>
-        <!-- Nút bấm thông minh kích hoạt đồng thời 2 hành động bằng sự kiện onclick -->
-        <a id="monetized-download-link" class="download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()">📥 Bấm vào đây để xác minh và tự động tải file về máy</a>
-    </div>
 </div>
 
 <script>
@@ -157,10 +178,10 @@ function processInputSpace(elementId) {
 
 function startGeneration() {
     const statusBox = document.getElementById("status-box");
-    const downloadArea = document.getElementById("download-area");
+    const downloadArea = document.getElementById("monetized-download-link");
     
     statusBox.style.display = "block";
-    downloadArea.style.display = "none";
+    downloadArea.style.display = "none"; // Ẩn nút cam đi khi bắt đầu bấm tạo mới
     statusBox.innerHTML = "⏳ Hệ thống đang tính toán cấu trúc tổ hợp...";
     statusBox.style.borderLeftColor = "#38bdf8";
 
@@ -275,19 +296,19 @@ function startGeneration() {
     statusBox.innerHTML = `✅ <b>Tính toán hoàn tất!</b> Đã xử lý xong <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất.`;
     statusBox.style.borderLeftColor = "#4ade80";
 
-    // Đóng gói sẵn file .txt trực tiếp vào RAM tạm thời
+    // Lưu dữ liệu file vào bộ nhớ RAM tạm thời
     const blobFile = new Blob([Array.from(finalWordlistSet).join('\n')], { type: 'text/plain;charset=utf-8' });
     if (globalBlobUrl) { URL.revokeObjectURL(globalBlobUrl); }
     globalBlobUrl = URL.createObjectURL(blobFile);
     
-    downloadArea.style.display = "block";
+    // Kích hoạt hiển thị nút tải cam nằm ngay sát cạnh nút xanh
+    downloadArea.style.display = "flex";
 }
 
-// Hàm kích hoạt lệnh tải ngầm ngay khi người dùng click chuột
 function downloadFileImmediately() {
     if (!globalBlobUrl) return;
     
-    // Tạo một thẻ liên kết ẩn để ép trình duyệt tải file xuống bộ nhớ máy tính
+    // Tự động kích hoạt hành động tải ngầm file .txt về máy
     const hiddenAnchor = document.createElement('a');
     hiddenAnchor.href = globalBlobUrl;
     hiddenAnchor.download = "wordlist.txt";
