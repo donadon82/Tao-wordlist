@@ -114,6 +114,51 @@
         }
         .hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; line-height: 1.4; }
 
+        /* Donation Section Styling */
+        .donation-box {
+            background-color: #111827;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        .donation-title {
+            color: var(--success-color);
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .wallet-container {
+            display: flex;
+            align-items: center;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 5px;
+        }
+        .wallet-label {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 10px;
+            font-family: monospace;
+        }
+        .wallet-address {
+            font-family: monospace;
+            color: #cbd5e1;
+            word-break: break-all;
+            flex: 1;
+            font-size: 0.9rem;
+            user-select: all;
+        }
+        .copy-hint {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: right;
+            margin-top: 4px;
+        }
+
         @media (max-width: 550px) {
             .button-group { flex-direction: column; }
         }
@@ -148,7 +193,7 @@
                 <span>🚀 Generate Combinations</span>
                 <small>Process Wordlist</small>
             </button>
-            <!-- Đã chèn link rút gọn kiếm tiền chính xác của bạn vào đây -->
+            <!-- Liên kết kiếm tiền chuẩn quốc tế của bạn đã được cấu hình an toàn -->
             <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
                 <span>📥 Unlock & Download File</span>
                 <small>Free Download (Support Developer)</small>
@@ -156,13 +201,23 @@
         </div>
         
         <div id="status-box" class="status"></div>
+
+        <!-- Khối thông tin quyên góp ví Bitcoin được thêm mới -->
+        <div class="donation-box">
+            <div class="donation-title">🎁 If this tool helped you to recover funds, please consider donating 1-5% of what you recovered, in your crypto of choice to:</div>
+            <div class="wallet-container">
+                <span class="wallet-label">BTC:</span>
+                <span class="wallet-address" id="btc-address">1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw</span>
+            </div>
+            <div class="copy-hint">Tip: Click on the address to select all for fast copy</div>
+        </div>
     </div>
     <div class="ads-placeholder">[Banner Advertising Space]</div>
 </div>
 <script>
 let globalBlobUrl = null;
 
-// Tự động khôi phục dữ liệu cục bộ an toàn khi F5 để tối ưu hóa trải nghiệm người dùng quốc tế
+// Tự động khôi phục tiến trình làm việc cũ khi F5
 document.addEventListener("DOMContentLoaded", () => {
     if(localStorage.getItem("intl_chu")) document.getElementById("input-chu").value = localStorage.getItem("intl_chu");
     if(localStorage.getItem("intl_so")) document.getElementById("input-so").value = localStorage.getItem("intl_so");
@@ -177,7 +232,6 @@ function toSentenceCase(str) {
 
 function processInputSpace(elementId) {
     let val = document.getElementById(elementId).value;
-    // Đồng bộ hóa việc lưu trữ cục bộ ngay khi xử lý dữ liệu
     localStorage.setItem("intl_" + elementId.replace("input-", ""), val);
     val = val.replace(/,/g, " ");
     return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
@@ -217,65 +271,3 @@ function startGeneration() {
     chuGoc.forEach(item => {
         chuMoRong.push(item.toLowerCase());
         chuMoRong.push(item.toUpperCase());
-        chuMoRong.push(toSentenceCase(item));
-    });
-    chuMoRong = [...new Set(chuMoRong)];
-
-    let wordlistSet = new Set();
-
-    chuMoRong.forEach(c => wordlistSet.add(c));
-    
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            wordlistSet.add(c + s);
-            wordlistSet.add(s + c);
-        });
-    });
-
-    chuMoRong.forEach(c => {
-        kytu.forEach(k => {
-            wordlistSet.add(c + k);
-            wordlistSet.add(k + c);
-        });
-    });
-
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            kytu.forEach(k => {
-                wordlistSet.add(c + s + k);
-                wordlistSet.add(c + k + s);
-                wordlistSet.add(s + c + k);
-                wordlistSet.add(s + k + c);
-                wordlistSet.add(k + c + s);
-                wordlistSet.add(k + s + c);
-            });
-        });
-    });
-
-    if(chuMoRong.length === 0) {
-        so.forEach(s => {
-            wordlistSet.add(s);
-            kytu.forEach(k => {
-                wordlistSet.add(s + k);
-                wordlistSet.add(k + s);
-            });
-        });
-    }
-
-    const finalResult = Array.from(wordlistSet).join("\n");
-    const totalLines = wordlistSet.size;
-
-    if (globalBlobUrl) {
-        URL.revokeObjectURL(globalBlobUrl);
-    }
-
-    const blob = new Blob([finalResult], { type: "text/plain;charset=utf-8" });
-    globalBlobUrl = URL.createObjectURL(blob);
-
-    downloadLink.style.display = "flex";
-    statusBox.innerHTML = `✅ <b>Generation Complete!</b><br>Total distinct password variations generated: <b>${totalLines.toLocaleString()}</b> lines.<br>Click the yellow button to unlock and save your file.`;
-    statusBox.style.borderLeftColor = "var(--success-color)";
-}
-</script>
-</body>
-</html>
