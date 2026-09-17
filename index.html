@@ -66,7 +66,6 @@
             transition: 0.2s;
         }
         button:hover { opacity: 0.9; background-color: var(--success-color); }
-        button:disabled { background-color: #475569; color: #94a3b8; cursor: not-allowed; }
         
         .download-btn {
             display: inline-block;
@@ -122,21 +121,20 @@
         <h2>🛠️ Công cụ: Tạo từ điển bẻ khóa/kiểm thử (Bản thương mại hóa)</h2>
         
         <label for="input-chu">📝 Nhập các CHỮ gốc (Cách nhau bằng DẤU CÁCH):</label>
-        <input type="text" id="input-chu" placeholder="Ví dụ: Hang thuhang phong">
+        <input type="text" id="input-chu" placeholder="Ví dụ: hang hangthu">
         
         <label for="input-so">🔢 Nhập các SỐ (Cách nhau bằng DẤU CÁCH):</label>
-        <input type="text" id="input-so" placeholder="Ví dụ: 123 222 345">
+        <input type="text" id="input-so" placeholder="Ví dụ: 123">
         
         <label for="input-kytu">🔣 Nhập các KÝ TỰ đặc biệt (Cách nhau bằng DẤU CÁCH):</label>
-        <input type="text" id="input-kytu" placeholder="Ví dụ: @ $ ! %">
+        <input type="text" id="input-kytu" placeholder="Ví dụ: @ #">
 
-        <button id="btn-submit" onclick="startGeneration()">⚡ Bắt đầu tổ hợp dữ liệu</button>
+        <button id="btn-submit" onclick="startGenerationDirect()">⚡ Bắt đầu tổ hợp dữ liệu</button>
         
         <div id="status-box" class="status"></div>
         
         <div id="download-area" style="display: none;">
-            <!-- ĐÃ ĐƯỢC TÍCH HỢP ĐƯỜNG LINK KIẾM TIỀN LINKVERTISE CHÍNH THỨC CỦA BẠN -->
-            <a href="https://direct-link.net/9437896/MiVtCk780s2i" target="_blank" class="download-btn">📥 Tải file wordlist.txt của bạn tại đây (Xác minh bảo mật để tải)</a>
+            <a href="https://direct-link.net" target="_blank" class="download-btn">📥 Tải file wordlist.txt của bạn tại đây (Xác minh bảo mật để tải)</a>
         </div>
     </div>
 
@@ -144,123 +142,134 @@
 </div>
 
 <script>
-    const workerCode = `
-        function toTitleCase(str) {
-            return str.toLowerCase().replace(/(?:^|\\s)\\S/g, function(a) { return a.toUpperCase(); });
-        }
+    function toTitleCase(str) {
+        return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, '');
+    }
 
-        function toSentenceCase(str) {
-            if (!str) return "";
-            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-        }
-
-        self.onmessage = function(e) {
-            const { chuGoc, so, kytu } = e.data;
-            const finalWordlistSet = new Set();
-
-            const chuSach = new Set();
-            chuGoc.forEach(word => {
-                chuSach.add(word);
-                chuSach.add(word.toLowerCase());
-                chuSach.add(word.toUpperCase());
-                chuSach.add(toTitleCase(word));
-                chuSach.add(toSentenceCase(word));
-            });
-            const currentChu = Array.from(chuSach);
-
-            if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
-                for (let c of currentChu) {
-                    for (let s_val of so) {
-                        for (let k of kytu) {
-                            finalWordlistSet.add(c + s_val + k);
-                            finalWordlistSet.add(c + k + s_val);
-                            finalWordlistSet.add(s_val + c + k);
-                            finalWordlistSet.add(s_val + k + c);
-                            finalWordlistSet.add(k + c + s_val);
-                            finalWordlistSet.add(k + s_val + c);
-                        }
-                    }
-                }
-            }
-
-            if(currentChu.length > 0) {
-                for (let c of currentChu) {
-                    finalWordlistSet.add(c);
-                    for (let s_val of so) {
-                        finalWordlistSet.add(c + s_val);
-                        finalWordlistSet.add(s_val + c);
-                    }
-                    for (let k of kytu) {
-                        finalWordlistSet.add(c + k);
-                        finalWordlistSet.add(k + c);
-                    }
-                }
-                for (let c1 of currentChu) {
-                    for (let c2 of currentChu) {
-                        finalWordlistSet.add(c1 + c2);
-                        for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
-                        for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
-                    }
-                }
-            }
-
-            if(kytu.length > 0 && currentChu.length > 0) {
-                for (let k of kytu) {
-                    for (let c1 of currentChu) {
-                        for (let c2 of currentChu) {
-                            for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
-                        }
-                    }
-                }
-                for (let k1 of kytu) {
-                    for (let c of currentChu) {
-                        for (let k2 of kytu) {
-                            finalWordlistSet.add(k1 + c + k2);
-                            for (let s_val of so) {
-                                finalWordlistSet.add(k1 + c + s_val + k2);
-                                finalWordlistSet.add(k1 + c + k2 + s_val);
-                            }
-                        }
-                    }
-                }
-                for (let k of kytu) {
-                    for (let c of currentChu) {
-                        for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
-                    }
-                }
-            }
-
-            if(so.length > 0) {
-                for (let s_val of so) {
-                    finalWordlistSet.add(s_val);
-                    for (let k of kytu) {
-                        finalWordlistSet.add(k + s_val);
-                        finalWordlistSet.add(s_val + k);
-                    }
-                }
-                for (let s1 of so) {
-                    for (let k of kytu) {
-                        for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
-                    }
-                }
-            }
-
-            const finalArray = Array.from(finalWordlistSet);
-            self.postMessage({ total: finalArray.length });
-        };
-    `;
+    function toSentenceCase(str) {
+        if (!str) return "";
+        const clean = str.replace(/\s+/g, '');
+        return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+    }
 
     function processInputSpace(elementId) {
         let val = document.getElementById(elementId).value;
-        val = val.replace(/,/g, ' ');
+        val = val.replace(/,/g, ' '); // Đổi phẩy thành dấu cách nếu người dùng nhập nhầm
         return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
     }
 
-    function startGeneration() {
+    function startGenerationDirect() {
         const statusBox = document.getElementById('status-box');
         const downloadArea = document.getElementById('download-area');
-        const btn = document.getElementById('btn-submit');
         
         statusBox.style.display = "block";
         downloadArea.style.display = "none";
-        statusBox.innerHTML = "⏳ Đang xử lý tính toán cấu trúc tổ hợp ngầm...";
+        statusBox.innerHTML = "⏳ Hệ thống đang tính toán cấu trúc tổ hợp...";
+        statusBox.style.borderLeftColor = "#38bdf8";
+
+        const chuGoc = processInputSpace('input-chu');
+        const so = processInputSpace('input-so');
+        const kytu = processInputSpace('input-kytu');
+
+        if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
+            statusBox.innerHTML = "⚠️ Lỗi: Vui lòng nhập dữ liệu đầu vào!";
+            statusBox.style.borderLeftColor = "#f87171";
+            return;
+        }
+
+        // Khởi tạo Set để tự động lọc trùng lặp chéo
+        const finalWordlistSet = new Set();
+        const chuSach = new Set();
+
+        chuGoc.forEach(word => {
+            chuSach.add(word);
+            chuSach.add(word.toLowerCase());
+            chuSach.add(word.toUpperCase());
+            chuSach.add(toTitleCase(word));
+            chuSach.add(toSentenceCase(word));
+        });
+        const currentChu = Array.from(chuSach);
+
+        // Thuật toán Tổ hợp trực tiếp không qua Worker
+        if(currentChu.length > 0 && so.length > 0 && kytu.length > 0) {
+            for (let c of currentChu) {
+                for (let s_val of so) {
+                    for (let k of kytu) {
+                        finalWordlistSet.add(c + s_val + k);
+                        finalWordlistSet.add(c + k + s_val);
+                        finalWordlistSet.add(s_val + c + k);
+                        finalWordlistSet.add(s_val + k + c);
+                        finalWordlistSet.add(k + c + s_val);
+                        finalWordlistSet.add(k + s_val + c);
+                    }
+                }
+            }
+        }
+
+        if(currentChu.length > 0) {
+            for (let c of currentChu) {
+                finalWordlistSet.add(c);
+                for (let s_val of so) {
+                    finalWordlistSet.add(c + s_val);
+                    finalWordlistSet.add(s_val + c);
+                }
+                for (let k of kytu) {
+                    finalWordlistSet.add(c + k);
+                    finalWordlistSet.add(k + c);
+                }
+            }
+            for (let c1 of currentChu) {
+                for (let c2 of currentChu) {
+                    finalWordlistSet.add(c1 + c2);
+                    for (let k of kytu) finalWordlistSet.add(c1 + c2 + k);
+                    for (let s_val of so) finalWordlistSet.add(c1 + s_val + c2);
+                }
+            }
+        }
+
+        if(kytu.length > 0 && currentChu.length > 0) {
+            for (let k of kytu) {
+                for (let c1 of currentChu) {
+                    for (let c2 of currentChu) {
+                        for (let s_val of so) finalWordlistSet.add(k + c1 + c2 + s_val);
+                    }
+                }
+            }
+            for (let k1 of kytu) {
+                for (let c of currentChu) {
+                    for (let k2 of kytu) {
+                        finalWordlistSet.add(k1 + c + k2);
+                        for (let s_val of so) {
+                            finalWordlistSet.add(k1 + c + s_val + k2);
+                            finalWordlistSet.add(k1 + c + k2 + s_val);
+                        }
+                    }
+                }
+            }
+            for (let k of kytu) {
+                for (let c of currentChu) {
+                    for (let s_val of so) finalWordlistSet.add(k + k + c + s_val);
+                }
+            }
+        }
+
+        if(so.length > 0) {
+            for (let s_val of so) {
+                finalWordlistSet.add(s_val);
+                for (let k of kytu) {
+                    finalWordlistSet.add(k + s_val);
+                    finalWordlistSet.add(s_val + k);
+                }
+            }
+            for (let s1 of so) {
+                for (let k of kytu) {
+                    for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
+                }
+            }
+        }
+
+        const total = finalWordlistSet.size;
+
+        if (total === 0) {
+            statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra.";
+            statusBox.style.borderLeftColor = "#f87171";
