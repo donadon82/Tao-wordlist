@@ -1,332 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Password Wordlist Generator</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --accent-color: #38bdf8;
-            --success-color: #4ade80;
-            --download-color: #f59e0b;
-            --danger-color: #f87171;
-        }
-        * { box-sizing: border-box; }
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container { max-width: 800px; width: 100%; }
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }
-        .subtitle { color: #94a3b8; margin-top: 0; font-size: 0.95rem; line-height: 1.4; }
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
-        label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
-        textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 12px;
-            background-color: #0f172a;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            color: white;
-            resize: vertical;
-            font-family: monospace;
-            font-size: 1rem;
-        }
-        textarea:focus { outline: none; border-color: var(--accent-color); }
-        
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            align-items: stretch;
-        }
-        
-        .btn-base {
-            padding: 14px 20px;
-            font-weight: bold;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: 0.2s;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            line-height: 1.3;
-        }
-        .btn-base small { font-weight: normal; font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
-        
-        .submit-btn {
-            background-color: var(--accent-color);
-            color: #0f172a;
-        }
-        .submit-btn:hover { opacity: 0.9; background-color: var(--success-color); }
-        
-        .download-btn {
-            background-color: var(--download-color);
-            color: #0f172a;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
-        }
-        .download-btn:hover { background-color: var(--success-color); transform: translateY(-1px); }
-        
-        .status {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 6px;
-            background-color: #0f172a;
-            border-left: 4px solid var(--accent-color);
-            display: none;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .ads-placeholder {
-            border: 1px dashed #475569;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 0.85rem;
-        }
-        .hint { color: #94a3b8; font-size: 0.85rem; margin-top: 5px; line-height: 1.4; }
-
-        /* Donation Section Style */
-        .donation-box {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 20px;
-        }
-        .donation-title {
-            color: var(--success-color);
-            font-size: 0.95rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .wallet-container {
-            display: flex;
-            align-items: center;
-            background-color: #1e293b;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            padding: 10px 12px;
-            margin-top: 5px;
-        }
-        .wallet-label {
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-right: 10px;
-            font-family: monospace;
-        }
-        .wallet-address {
-            font-family: monospace;
-            color: #cbd5e1;
-            word-break: break-all;
-            flex: 1;
-            font-size: 0.9rem;
-            user-select: all;
-        }
-
-        @media (max-width: 550px) {
-            .button-group { flex-direction: column; }
-        }
-    </style>
+    <title>Crypto Wordlist Generator - Tối Ưu & Bảo Mật</title>
+    <!-- Nhúng Tailwind CSS để giao diện đẹp và hiện đại nhanh chóng -->
+    <script src="https://jsdelivr.net"></script>
 </head>
-<body>
-<div class="container">
-    <header>
-        <h1>Crypto Password Wordlist Generator</h1>
-        <p class="subtitle">
-            Generate custom password variations using your own base keywords<br>
-            Designed for local security audits and wallet access recovery testing
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header & Cam kết bảo mật -->
+    <header class="max-w-4xl mx-auto w-full px-4 pt-8 text-center">
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r content-center from-cyan-400 to-blue-500 mb-2">
+            Crypto Password Wordlist Generator
+        </h1>
+        <p class="text-slate-400 text-sm max-w-xl mx-auto">
+            Tạo biến thể mật khẩu cá nhân hóa để khôi phục quyền truy cập ví điện tử địa phương.
         </p>
+        
+        <!-- Khối hộp cam kết bảo mật tạo độ tin cậy tuyệt đối cho người dùng -->
+        <div class="mt-4 p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs max-w-xl mx-auto flex items-center justify-center gap-2">
+            🛡️ <strong>Cam kết bảo mật:</strong> Công cụ chạy 100% bằng JavaScript trên máy bạn. Bạn có thể tắt mạng (Offline) sau khi tải trang để sử dụng.
+        </div>
     </header>
-    <div class="card">
-        <h2>⚙️ Input Data Configuration</h2>
-        
-        <label for="input-chu">📝 Base Keywords & Letters</label>
-        <textarea id="input-chu" placeholder="Example:&#10;wallet&#10;backup&#10;crypto"></textarea>
-        <div class="hint">
-            Enter each item on a new line or separate them with single spaces.
-        </div>
-        
-        <label for="input-so">🔢 Target Numbers & Years</label>
-        <textarea id="input-so" placeholder="Example: 2024 2025 123"></textarea>
-        
-        <label for="input-kytu">🔣 Special Characters & Symbols</label>
-        <textarea id="input-kytu" placeholder="Example: ! @ # \$"></textarea>
-        
-        <div class="button-group">
-            <button class="btn-base submit-btn" onclick="startGeneration()">
-                <span>🚀 Generate Combinations</span>
-                <small>Process Wordlist</small>
-            </button>
-            <!-- Cấu hình link quảng cáo chuẩn xác -->
-            <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
-                <span>📥 Unlock & Download File</span>
-                <small>Free Download (Support Developer)</small>
-            </a>
-        </div>
-        
-        <div id="status-box" class="status"></div>
 
-        <!-- Khối kêu gọi ủng hộ (Donation Box) -->
-        <div class="donation-box">
-            <div class="donation-title">🎁 If this tool helped you to recover funds, please consider donating 1-5% of what you recovered, in your crypto of choice to:</div>
-            <div class="wallet-container">
-                <span class="wallet-label">BTC:</span>
-                <span class="wallet-address">1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw</span>
+    <!-- Khu vực nhập liệu -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
+        <!-- Cột 1: Chữ gốc -->
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+            <label class="block text-sm font-semibold text-cyan-400 mb-2">📝 Từ gốc / Chữ cái</label>
+            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="nguyen&#10;tuean&#10;khang"></textarea>
+            <span class="text-[11px] text-slate-500 mt-1">Mỗi từ một dòng hoặc cách nhau bằng dấu cách.</span>
+        </div>
+
+        <!-- Cột 2: Số -->
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+            <label class="block text-sm font-semibold text-cyan-400 mb-2">🔢 Chuỗi số / Năm sinh</label>
+            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="123&#10;1990&#10;2026"></textarea>
+            <span class="text-[11px] text-slate-500 mt-1">Hệ thống tự động bóc tách nếu số nằm trên cùng 1 hàng.</span>
+        </div>
+
+        <!-- Cột 3: Ký tự đặc biệt -->
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+            <label class="block text-sm font-semibold text-cyan-400 mb-2">🔣 Ký tự đặc biệt</label>
+            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="@&#10;#&#10;$&#10;!"></textarea>
+            <span class="text-[11px] text-slate-500 mt-1">Các ký tự phổ biến dùng để kẹp săm hoặc lặp cuối.</span>
+        </div>
+    </main>
+
+    <!-- Nút hành động & Quyên góp -->
+    <section class="max-w-4xl mx-auto w-full px-4 pb-8 text-center">
+        <button class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0">
+            🚀 Bắt Đầu Sinh Từ Điển Sạch (Wordlist.txt)
+        </button>
+
+        <!-- Phần đóng góp thiết kế gọn gàng, tinh tế hơn -->
+        <div class="mt-8 p-4 bg-slate-800/30 border border-slate-800 rounded-xl max-w-md mx-auto text-xs text-slate-400">
+            🎁 Nếu công cụ này giúp bạn tìm lại được tài sản, hãy cân nhắc ủng hộ nhà phát triển 1-5% giá trị khôi phục:
+            <div class="mt-2 bg-slate-950 p-2 rounded border border-slate-700 font-mono text-cyan-400 select-all cursor-pointer truncate" title="Click để sao chép nhanh">
+                BTC: 1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw
             </div>
-            <div class="hint" style="margin-top: 8px;">Tip: Click on the address to select all for fast copy.</div>
         </div>
-    </div>
-    <div class="ads-placeholder">[Banner Advertising Space]</div>
-</div>
-<script>
-let globalBlobUrl = null;
+    </section>
 
-// Tự động khôi phục dữ liệu cục bộ an toàn khi F5 để tối ưu hóa trải nghiệm người dùng quốc tế
-document.addEventListener("DOMContentLoaded", () => {
-    if(localStorage.getItem("intl_chu")) document.getElementById("input-chu").value = localStorage.getItem("intl_chu");
-    if(localStorage.getItem("intl_so")) document.getElementById("input-so").value = localStorage.getItem("intl_so");
-    if(localStorage.getItem("intl_kytu")) document.getElementById("input-kytu").value = localStorage.getItem("intl_kytu");
-});
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        &copy; 2026 Crypto Wordlist Generator. Phát triển vì mục đích kiểm thử an toàn thông tin hợp pháp.
+    </footer>
 
-function toSentenceCase(str) {
-    if (!str) return "";
-    const clean = str.replace(/\s+/g, "");
-    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-}
-
-function processInputSpace(elementId) {
-    let val = document.getElementById(elementId).value;
-    localStorage.setItem("intl_" + elementId.replace("input-", ""), val);
-    val = val.replace(/,/g, " ");
-    return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
-}
-
-function downloadFileImmediately() {
-    if (globalBlobUrl) {
-        const tempLink = document.createElement("a");
-        tempLink.href = globalBlobUrl;
-        tempLink.download = "generated_wordlist.txt";
-        document.body.appendChild(tempLink);
-        tempLink.click();
-        document.body.removeChild(tempLink);
-    }
-}
-
-function startGeneration() {
-    const statusBox = document.getElementById("status-box");
-    const downloadLink = document.getElementById("monetized-download-link");
-    
-    statusBox.style.display = "block";
-    downloadLink.style.display = "none";
-    statusBox.innerHTML = "⏳ Computing structure combinations... Please wait...";
-    statusBox.style.borderLeftColor = "#38bdf8";
-
-    const chuGoc = processInputSpace("input-chu");
-    const so = processInputSpace("input-so");
-    const kytu = processInputSpace("input-kytu");
-
-    if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
-        statusBox.innerHTML = "⚠️ Error: Please fill in at least one input field!";
-        statusBox.style.borderLeftColor = "#f87171";
-        return;
-    }
-
-    let chuMoRong = [];
-    chuGoc.forEach(item => {
-        chuMoRong.push(item.toLowerCase());
-        chuMoRong.push(item.toUpperCase());
-        chuMoRong.push(toSentenceCase(item));
-    });
-    chuMoRong = [...new Set(chuMoRong)];
-
-    let wordlistSet = new Set();
-
-    // 1. Chỉ có biến thể chữ
-chuMoRong.forEach(c => wordlistSet.add(c));
-    
-    // 2. Tổ hợp Chữ + Số
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            wordlistSet.add(c + s);
-            wordlistSet.add(s + c);
-        });
-    });
-
-    // 3. Tổ hợp Chữ + Ký tự
-    chuMoRong.forEach(c => {
-        kytu.forEach(k => {
-            wordlistSet.add(c + k);
-            wordlistSet.add(k + c);
-        });
-    });
-
-    // 4. Tổ hợp đầy đủ Chữ + Số + Ký tự
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            kytu.forEach(k => {
-                wordlistSet.add(c + s + k);
-                wordlistSet.add(c + k + s);
-                wordlistSet.add(s + c + k);
-                wordlistSet.add(s + k + c);
-                wordlistSet.add(k + c + s);
-                wordlistSet.add(k + s + c);
-            });
-        });
-    });
-
-    // Nếu không nhập chữ, sinh cấu trúc Số + Ký tự đặc biệt
-    if(chuMoRong.length === 0) {
-        so.forEach(s => {
-            wordlistSet.add(s);
-            kytu.forEach(k => {
-                wordlistSet.add(s + k);
-                wordlistSet.add(k + s);
-            });
-        });
-    }
-
-    const finalResult = Array.from(wordlistSet).join("\n");
-    const totalLines = wordlistSet.size;
-
-    if (globalBlobUrl) {
-        URL.revokeObjectURL(globalBlobUrl);
-    }
-
-    const blob = new Blob([finalResult], { type: "text/plain;charset=utf-8" });
-    globalBlobUrl = URL.createObjectURL(blob);
-
-    downloadLink.style.display = "flex";
-    statusBox.innerHTML = `✅ <b>Generation Complete!</b><br>Total distinct password variations generated: <b>${totalLines.toLocaleString()}</b> lines.<br>Click the yellow button to unlock and save your file.`;
-    statusBox.style.borderLeftColor = "var(--success-color)";
-}
-</script>
+</body>
+</html>
