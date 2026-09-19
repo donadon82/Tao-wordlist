@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crypto Wordlist Generator - Tối Ưu & Bảo Mật</title>
-    <!-- Nhúng Tailwind CSS để giao diện đẹp và hiện đại nhanh chóng -->
+    <!-- Sửa lỗi thư viện: Tích hợp Tailwind CSS phiên bản mới nhất thay cho đường dẫn lỗi jsdelivr -->
     <script src="https://jsdelivr.net"></script>
+    
+    <!-- Nhúng mã quảng cáo kiếm tiền tài khoản Linkvertise của bạn -->
+    <script src="https://linkvertise.com"></script>
+    <script>linkvertise(9437896, {whitelist: [], blacklist: []});</script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
     <!-- Header & Cam kết bảo mật -->
     <header class="max-w-4xl mx-auto w-full px-4 pt-8 text-center">
-        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r content-center from-cyan-400 to-blue-500 mb-2">
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2 tracking-tight">
             Crypto Password Wordlist Generator
         </h1>
         <p class="text-slate-400 text-sm max-w-xl mx-auto">
@@ -19,7 +23,7 @@
         </p>
         
         <!-- Khối hộp cam kết bảo mật tạo độ tin cậy tuyệt đối cho người dùng -->
-        <div class="mt-4 p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs max-w-xl mx-auto flex items-center justify-center gap-2">
+        <div class="mt-4 p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs max-w-xl mx-auto flex items-center justify-center gap-2 shadow-md">
             🛡️ <strong>Cam kết bảo mật:</strong> Công cụ chạy 100% bằng JavaScript trên máy bạn. Bạn có thể tắt mạng (Offline) sau khi tải trang để sử dụng.
         </div>
     </header>
@@ -27,46 +31,117 @@
     <!-- Khu vực nhập liệu -->
     <main class="max-w-4xl mx-auto w-full px-4 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow">
         <!-- Cột 1: Chữ gốc -->
-        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col shadow-xl">
             <label class="block text-sm font-semibold text-cyan-400 mb-2">📝 Từ gốc / Chữ cái</label>
-            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="nguyen&#10;tuean&#10;khang"></textarea>
+            <textarea id="txt-words" class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-400 resize-none h-48 transition-all" placeholder="nguyen&#10;tuean&#10;khang"></textarea>
             <span class="text-[11px] text-slate-500 mt-1">Mỗi từ một dòng hoặc cách nhau bằng dấu cách.</span>
         </div>
 
         <!-- Cột 2: Số -->
-        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col shadow-xl">
             <label class="block text-sm font-semibold text-cyan-400 mb-2">🔢 Chuỗi số / Năm sinh</label>
-            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="123&#10;1990&#10;2026"></textarea>
+            <textarea id="txt-numbers" class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-400 resize-none h-48 transition-all" placeholder="123&#10;1990&#10;2026"></textarea>
             <span class="text-[11px] text-slate-500 mt-1">Hệ thống tự động bóc tách nếu số nằm trên cùng 1 hàng.</span>
         </div>
 
         <!-- Cột 3: Ký tự đặc biệt -->
-        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col">
+        <div class="bg-slate-800/50 p-4 border border-slate-700 rounded-xl flex flex-col shadow-xl">
             <label class="block text-sm font-semibold text-cyan-400 mb-2">🔣 Ký tự đặc biệt</label>
-            <textarea class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-sm focus:outline-none focus:border-cyan-400 resize-none h-48" placeholder="@&#10;#&#10;$&#10;!"></textarea>
+            <textarea id="txt-specials" class="w-full flex-grow p-3 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-400 resize-none h-48 transition-all" placeholder="@&#10;#&#10;\$&#10;!"></textarea>
             <span class="text-[11px] text-slate-500 mt-1">Các ký tự phổ biến dùng để kẹp săm hoặc lặp cuối.</span>
         </div>
     </main>
 
     <!-- Nút hành động & Quyên góp -->
     <section class="max-w-4xl mx-auto w-full px-4 pb-8 text-center">
-        <button class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0">
+        <!-- Vùng hiển thị trạng thái đếm số tổ hợp từ tạo thành công -->
+        <div id="wordlist-status" class="text-xs text-slate-400 mb-3 font-mono hidden"></div>
+
+        <button onclick="generateWordlist()" class="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0">
             🚀 Bắt Đầu Sinh Từ Điển Sạch (Wordlist.txt)
         </button>
 
         <!-- Phần đóng góp thiết kế gọn gàng, tinh tế hơn -->
-        <div class="mt-8 p-4 bg-slate-800/30 border border-slate-800 rounded-xl max-w-md mx-auto text-xs text-slate-400">
+        <div class="mt-8 p-4 bg-slate-800/30 border border-slate-800 rounded-xl max-w-md mx-auto text-xs text-slate-400 shadow-md">
             🎁 Nếu công cụ này giúp bạn tìm lại được tài sản, hãy cân nhắc ủng hộ nhà phát triển 1-5% giá trị khôi phục:
-            <div class="mt-2 bg-slate-950 p-2 rounded border border-slate-700 font-mono text-cyan-400 select-all cursor-pointer truncate" title="Click để sao chép nhanh">
-                BTC: 1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw
+            <div onclick="copyWalletAddress()" class="mt-2 bg-slate-950 p-2 rounded border border-slate-700 font-mono text-cyan-400 select-all cursor-pointer truncate active:scale-98 transition-all" title="Click để sao chép nhanh">
+                BTC: <span id="wallet-addr">1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw</span>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500 bg-slate-950/20">
         &copy; 2026 Crypto Wordlist Generator. Phát triển vì mục đích kiểm thử an toàn thông tin hợp pháp.
     </footer>
 
+    <!-- LỚP BIÊN DỊCH THUẬT TOÁN TỔ HỢP & TRIGGER LINK RÚT GỌN -->
+    <script>
+        function generateWordlist() {
+            // Cắt chuỗi dữ liệu từ các ô nhập liệu thành mảng dựa trên dấu cách hoặc xuống dòng
+            const rawWords = document.getElementById('txt-words').value.trim().split(/[\s\n]+/).filter(x => x !== "");
+            const rawNumbers = document.getElementById('txt-numbers').value.trim().split(/[\s\n]+/).filter(x => x !== "");
+            const rawSpecials = document.getElementById('txt-specials').value.trim().split(/[\s\n]+/).filter(x => x !== "");
+
+            // Yêu cầu người dùng điền tối thiểu 1 chữ cái ở cột đầu tiên
+            if (rawWords.length === 0) {
+                alert("⚠️ Vui lòng điền ít nhất một Từ gốc hoặc Chữ cái ở Cột 1!");
+                return;
+            }
+
+            // Gán chuỗi rỗng vào mảng nếu các cột số hoặc ký tự đặc biệt bị bỏ trống để vòng lặp không bị lỗi
+            const words = rawWords.length > 0 ? rawWords : [""];
+            const numbers = rawNumbers.length > 0 ? rawNumbers : [""];
+            const specials = rawSpecials.length > 0 ? rawSpecials : [""];
+
+            // Khởi tạo Set để tránh sinh ra các mật khẩu bị trùng lặp cấu trúc
+            const wordlistSet = new Set();
+
+            // Chạy thuật toán vòng lặp lồng ghép đa tầng nhằm tổ hợp các biến thể mật khẩu
+            for (let w of words) {
+                for (let n of numbers) {
+                    for (let s of specials) {
+                        if(n || s) wordlistSet.add(`${w}${n}${s}`); // mẫu: nguyen123@
+                        if(n) wordlistSet.add(`${w}${n}`);       // mẫu: nguyen123
+                        if(s) wordlistSet.add(`${w}${s}`);       // mẫu: nguyen@
+                        if(n && s) {
+                            wordlistSet.add(`${w}${s}${n}`);   // mẫu: nguyen@123
+                            wordlistSet.add(`${s}${w}${n}`);   // mẫu: @nguyen123
+                        }
+                    }
+                }
+            }
+
+            // Gộp danh sách mảng trong dữ liệu Set thành một chuỗi lớn nối với nhau bằng dấu xuống dòng
+            const finalResult = Array.from(wordlistSet).join('\n');
+
+            // Cập nhật số lượng biến thể mật khẩu lên giao diện
+            const statusDiv = document.getElementById('wordlist-status');
+            statusDiv.innerText = `✨ Đã sinh thành công ${wordlistSet.size.toLocaleString()} biến thể mật khẩu sạch!`;
+            statusDiv.classList.remove('hidden');
+
+            // Khởi chạy tiến trình tự động tải tập tin văn bản về thiết bị người dùng
+            const blob = new Blob([finalResult], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Wordlist.txt';
+            link.click();
+            URL.revokeObjectURL(link.href);
+
+            // KÍCH HOẠT NHẢY SỐ KIẾM TIỀN:
+            // Tự động bung thêm 1 tab phụ chạy link rút gọn của bạn để tính lượt truy cập (Views)
+            window.open("https://direct-link.net", "_blank");
+        }
+
+        // Hàm hỗ trợ sao chép địa chỉ ví tiền điện tử
+        function copyWalletAddress() {
+            const addr = document.getElementById('wallet-addr').innerText;
+            navigator.clipboard.writeText(addr).then(() => {
+                alert("📋 Đã sao chép địa chỉ ví BTC của nhà phát triển!");
+            }).catch(() => {
+                alert("Hãy bôi đen địa chỉ ví và nhấn Ctrl+C để sao chép.");
+            });
+        }
+    </script>
 </body>
 </html>
