@@ -25,8 +25,41 @@
             flex-direction: column;
             align-items: center;
         }
-        .container { max-width: 800px; width: 100%; }
-        header { text-align: center; margin-bottom: 25px; }
+        .container { max-width: 800px; width: 100%; position: relative; }
+        
+        /* Cấu hình nút chọn ngôn ngữ góc trên */
+        .lang-switcher {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            gap: 5px;
+            background-color: var(--card-bg);
+            padding: 4px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+        .lang-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .lang-btn.active {
+            background-color: var(--accent-color);
+            color: #0f172a;
+        }
+        .lang-btn:hover:not(.active) {
+            color: var(--text-color);
+            background-color: #334155;
+        }
+
+        header { text-align: center; margin-bottom: 25px; padding-top: 15px; }
         h1 { color: var(--accent-color); margin-bottom: 5px; font-size: 1.8rem; }
         .subtitle { color: #94a3b8; margin-top: 0; font-size: 0.95rem; line-height: 1.4; }
         .card {
@@ -36,6 +69,19 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
+        /* Hộp cam kết bảo mật */
+        .secure-banner {
+            padding: 12px;
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 6px;
+            color: #10b981;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
         h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 1.1rem; color: #94a3b8; }
         label { display: block; margin: 14px 0 6px; font-weight: bold; font-size: 0.95rem; }
         textarea {
@@ -154,43 +200,57 @@
         }
 
         @media (max-width: 550px) {
+            .container { padding-top: 40px; }
             .button-group { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- Khu vực nút chọn ngôn ngữ -->
+    <div class="lang-switcher">
+        <button id="btn-en" class="lang-btn active" onclick="switchLanguage('en')">EN</button>
+        <button id="btn-vi" class="lang-btn" onclick="switchLanguage('vi')">VI</button>
+    </div>
+
     <header>
-        <h1>Crypto Password Wordlist Generator</h1>
-        <p class="subtitle">
+        <h1 id="txt-title">Crypto Password Wordlist Generator</h1>
+        <p id="txt-subtitle" class="subtitle">
             Generate custom password variations using your own base keywords<br>
             Designed for local security audits and wallet access recovery testing
         </p>
     </header>
     <div class="card">
-        <h2>⚙️ Input Data Configuration</h2>
+        <div id="txt-secure" class="secure-banner">
+            🛡️ <strong>Privacy Security:</strong> 100% Client-side. Processing runs entirely in your browser. You can safely disconnect your network/internet before generating.
+        </div>
+
+        <h2 id="txt-config">⚙️ Input Data Configuration</h2>
         
-        <label for="input-chu">📝 Base Keywords & Letters</label>
-        <textarea id="input-chu" placeholder="Example:&#10;wallet&#10;backup&#10;crypto"></textarea>
-        <div class="hint">
+        <label id="lbl-chu" for="input-chu">📝 Base Keywords & Letters</label>
+        <textarea id="input-chu" placeholder="Example:
+wallet
+backup
+crypto"></textarea>
+        <div id="hint-chu" class="hint">
             Enter each item on a new line or separate them with single spaces.
         </div>
         
-        <label for="input-so">🔢 Target Numbers & Years</label>
+        <label id="lbl-so" for="input-so">🔢 Target Numbers & Years</label>
         <textarea id="input-so" placeholder="Example: 2024 2025 123"></textarea>
+        <div id="hint-so" class="hint">Numbers separated by spaces on a single line will be automatically fixed into clean columns.</div>
         
-        <label for="input-kytu">🔣 Special Characters & Symbols</label>
-        <textarea id="input-kytu" placeholder="Example: ! @ # \$"></textarea>
+        <label id="lbl-kytu" for="input-kytu" style="margin-top: 14px;">🔣 Special Characters & Symbols</label>
+        <textarea id="input-kytu" placeholder="Example: ! @ # $"></textarea>
         
         <div class="button-group">
             <button class="btn-base submit-btn" onclick="startGeneration()">
-                <span>🚀 Generate Combinations</span>
-                <small>Process Wordlist</small>
+                <span id="txt-gen-main">🚀 Generate Combinations</span>
+                <small id="txt-gen-sub">Process Wordlist</small>
             </button>
-            <!-- Cấu hình link quảng cáo chuẩn xác -->
             <a id="monetized-download-link" class="btn-base download-btn" href="https://direct-link.net" target="_blank" onclick="downloadFileImmediately()" style="display: none;">
-                <span>📥 Unlock & Download File</span>
-                <small>Free Download (Support Developer)</small>
+                <span id="txt-dl-main">📥 Unlock & Download File</span>
+                <small id="txt-dl-sub">Free Download (Support Developer)</small>
             </a>
         </div>
         
@@ -198,135 +258,21 @@
 
         <!-- Khối kêu gọi ủng hộ (Donation Box) -->
         <div class="donation-box">
-            <div class="donation-title">🎁 If this tool helped you to recover funds, please consider donating 1-5% of what you recovered, in your crypto of choice to:</div>
+            <div id="txt-donate" class="donation-title">🎁 If this tool helped you to recover funds, please consider donating 1-5% of what you recovered, in your crypto of choice to:</div>
             <div class="wallet-container">
                 <span class="wallet-label">BTC:</span>
                 <span class="wallet-address">1LxdvvgwtSixDGPTuyBDKLZjTaLux3NVfw</span>
             </div>
-            <div class="hint" style="margin-top: 8px;">Tip: Click on the address to select all for fast copy.</div>
+            <div id="hint-donate" class="hint" style="margin-top: 8px;">Tip: Click on the address to select all for fast copy.</div>
         </div>
     </div>
     <div class="ads-placeholder">[Banner Advertising Space]</div>
 </div>
 <script>
 let globalBlobUrl = null;
+let currentLang = 'en';
 
-// Tự động khôi phục dữ liệu cục bộ an toàn khi F5 để tối ưu hóa trải nghiệm người dùng quốc tế
-document.addEventListener("DOMContentLoaded", () => {
-    if(localStorage.getItem("intl_chu")) document.getElementById("input-chu").value = localStorage.getItem("intl_chu");
-    if(localStorage.getItem("intl_so")) document.getElementById("input-so").value = localStorage.getItem("intl_so");
-    if(localStorage.getItem("intl_kytu")) document.getElementById("input-kytu").value = localStorage.getItem("intl_kytu");
-});
-
-function toSentenceCase(str) {
-    if (!str) return "";
-    const clean = str.replace(/\s+/g, "");
-    return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-}
-
-function processInputSpace(elementId) {
-    let val = document.getElementById(elementId).value;
-    localStorage.setItem("intl_" + elementId.replace("input-", ""), val);
-    val = val.replace(/,/g, " ");
-    return val.split(/\s+/).map(item => item.trim()).filter(item => item.length > 0);
-}
-
-function downloadFileImmediately() {
-    if (globalBlobUrl) {
-        const tempLink = document.createElement("a");
-        tempLink.href = globalBlobUrl;
-        tempLink.download = "generated_wordlist.txt";
-        document.body.appendChild(tempLink);
-        tempLink.click();
-        document.body.removeChild(tempLink);
-    }
-}
-
-function startGeneration() {
-    const statusBox = document.getElementById("status-box");
-    const downloadLink = document.getElementById("monetized-download-link");
-    
-    statusBox.style.display = "block";
-    downloadLink.style.display = "none";
-    statusBox.innerHTML = "⏳ Computing structure combinations... Please wait...";
-    statusBox.style.borderLeftColor = "#38bdf8";
-
-    const chuGoc = processInputSpace("input-chu");
-    const so = processInputSpace("input-so");
-    const kytu = processInputSpace("input-kytu");
-
-    if (chuGoc.length === 0 && so.length === 0 && kytu.length === 0) {
-        statusBox.innerHTML = "⚠️ Error: Please fill in at least one input field!";
-        statusBox.style.borderLeftColor = "#f87171";
-        return;
-    }
-
-    let chuMoRong = [];
-    chuGoc.forEach(item => {
-        chuMoRong.push(item.toLowerCase());
-        chuMoRong.push(item.toUpperCase());
-        chuMoRong.push(toSentenceCase(item));
-    });
-    chuMoRong = [...new Set(chuMoRong)];
-
-    let wordlistSet = new Set();
-
-    // 1. Chỉ có biến thể chữ
-chuMoRong.forEach(c => wordlistSet.add(c));
-    
-    // 2. Tổ hợp Chữ + Số
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            wordlistSet.add(c + s);
-            wordlistSet.add(s + c);
-        });
-    });
-
-    // 3. Tổ hợp Chữ + Ký tự
-    chuMoRong.forEach(c => {
-        kytu.forEach(k => {
-            wordlistSet.add(c + k);
-            wordlistSet.add(k + c);
-        });
-    });
-
-    // 4. Tổ hợp đầy đủ Chữ + Số + Ký tự
-    chuMoRong.forEach(c => {
-        so.forEach(s => {
-            kytu.forEach(k => {
-                wordlistSet.add(c + s + k);
-                wordlistSet.add(c + k + s);
-                wordlistSet.add(s + c + k);
-                wordlistSet.add(s + k + c);
-                wordlistSet.add(k + c + s);
-                wordlistSet.add(k + s + c);
-            });
-        });
-    });
-
-    // Nếu không nhập chữ, sinh cấu trúc Số + Ký tự đặc biệt
-    if(chuMoRong.length === 0) {
-        so.forEach(s => {
-            wordlistSet.add(s);
-            kytu.forEach(k => {
-                wordlistSet.add(s + k);
-                wordlistSet.add(k + s);
-            });
-        });
-    }
-
-    const finalResult = Array.from(wordlistSet).join("\n");
-    const totalLines = wordlistSet.size;
-
-    if (globalBlobUrl) {
-        URL.revokeObjectURL(globalBlobUrl);
-    }
-
-    const blob = new Blob([finalResult], { type: "text/plain;charset=utf-8" });
-    globalBlobUrl = URL.createObjectURL(blob);
-
-    downloadLink.style.display = "flex";
-    statusBox.innerHTML = `✅ <b>Generation Complete!</b><br>Total distinct password variations generated: <b>${totalLines.toLocaleString()}</b> lines.<br>Click the yellow button to unlock and save your file.`;
-    statusBox.style.borderLeftColor = "var(--success-color)";
-}
-</script>
+// Bộ dữ liệu dịch thuật đa ngôn ngữ Anh - Việt
+const langData = {
+    en: {
+        title: "Crypto Password Wordlist Generator",
